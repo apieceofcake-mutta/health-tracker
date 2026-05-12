@@ -751,6 +751,13 @@
             <span class="input-unit">kg</span>
           </div>
         </div>
+        <div class="field">
+          <label class="field-label">基礎代謝</label>
+          <div class="input-wrap">
+            <input type="number" inputmode="numeric" id="bmr" placeholder="--">
+            <span class="input-unit">kcal</span>
+          </div>
+        </div>
 
         <!-- 食事 -->
         <div class="section-header">
@@ -794,20 +801,37 @@
           <div class="section-bar" style="background:var(--exercise)"></div>
           <span class="section-title">Activity &amp; Sleep</span>
         </div>
-        <div class="row">
-          <div class="field">
-            <label class="field-label">運動消費カロリー</label>
-            <div class="input-wrap">
-              <input type="number" inputmode="numeric" id="exerciseCalories" placeholder="--">
-              <span class="input-unit">kcal</span>
-            </div>
+        <div class="field">
+          <label class="field-label">運動消費カロリー</label>
+          <div class="input-wrap">
+            <input type="number" inputmode="numeric" id="exerciseCalories" placeholder="--">
+            <span class="input-unit">kcal</span>
           </div>
-          <div class="field">
-            <label class="field-label">睡眠時間</label>
-            <div class="input-wrap">
-              <input type="number" inputmode="decimal" id="sleepHours" placeholder="--">
-              <span class="input-unit">h</span>
-            </div>
+        </div>
+        <div class="field">
+          <label class="field-label">歩数</label>
+          <div class="input-wrap">
+            <input type="number" inputmode="numeric" id="steps" placeholder="--">
+            <span class="input-unit">歩</span>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">入眠時刻</label>
+          <div class="input-wrap">
+            <input type="time" id="bedTime" style="color:var(--text-primary);font-family:var(--font-mono);font-size:18px;font-weight:500;flex:1;background:none;border:none;outline:none;-webkit-appearance:none;">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">起床時刻</label>
+          <div class="input-wrap">
+            <input type="time" id="wakeTime" style="color:var(--text-primary);font-family:var(--font-mono);font-size:18px;font-weight:500;flex:1;background:none;border:none;outline:none;-webkit-appearance:none;">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">睡眠時間（自動計算）</label>
+          <div class="input-wrap" style="background:rgba(171,71,188,0.08);border-color:rgba(171,71,188,0.3)">
+            <span id="sleepCalc" style="font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--sleep);flex:1">--</span>
+            <span class="input-unit">h</span>
           </div>
         </div>
 
@@ -866,24 +890,22 @@
 
         <!-- 任意項目 -->
         <div class="optional-toggle" onclick="toggleOptional()">
-          <span class="optional-toggle-label">▼ 任意項目（腹囲 / 歩数 / 水分）</span>
+          <span class="optional-toggle-label">▼ 任意項目（腹囲 / 運動時間 / 水分）</span>
           <span class="toggle-arrow" id="toggle-arrow">▲</span>
         </div>
         <div class="optional-panel" id="optional-panel">
-          <div class="row">
-            <div class="field">
-              <label class="field-label">腹囲</label>
-              <div class="input-wrap">
-                <input type="number" inputmode="decimal" id="waist" placeholder="--">
-                <span class="input-unit">cm</span>
-              </div>
+          <div class="field">
+            <label class="field-label">腹囲</label>
+            <div class="input-wrap">
+              <input type="number" inputmode="decimal" id="waist" placeholder="--">
+              <span class="input-unit">cm</span>
             </div>
-            <div class="field">
-              <label class="field-label">歩数</label>
-              <div class="input-wrap">
-                <input type="number" inputmode="numeric" id="steps" placeholder="--">
-                <span class="input-unit">歩</span>
-              </div>
+          </div>
+          <div class="field">
+            <label class="field-label">運動時間</label>
+            <div class="input-wrap">
+              <input type="number" inputmode="decimal" id="exerciseDuration" placeholder="--">
+              <span class="input-unit">時間</span>
             </div>
           </div>
           <div class="field">
@@ -1264,14 +1286,34 @@ async function navigateDate(delta) {
 /* ═══════════════════════════════════════════
    INPUT FORM
 ═══════════════════════════════════════════ */
-const FIELDS = ['weight','bodyFat','muscleMass','calorieIntake','protein','fat','carbs',
-                'exerciseCalories','sleepHours','memo','waist','steps','water'];
+const FIELDS = ['weight','bodyFat','muscleMass','bmr','calorieIntake','protein','fat','carbs',
+                'exerciseCalories','steps','bedTime','wakeTime','memo','waist','exerciseDuration','water'];
+
+function calcSleep(bed, wake) {
+  if (!bed || !wake) return null;
+  const [bh, bm] = bed.split(':').map(Number);
+  const [wh, wm] = wake.split(':').map(Number);
+  let mins = (wh * 60 + wm) - (bh * 60 + bm);
+  if (mins <= 0) mins += 24 * 60; // 日をまたぐ場合
+  return Math.round(mins / 60 * 10) / 10;
+}
+
+function updateSleepCalc() {
+  const bed  = document.getElementById('bedTime').value;
+  const wake = document.getElementById('wakeTime').value;
+  const h    = calcSleep(bed, wake);
+  document.getElementById('sleepCalc').textContent = h != null ? h : '--';
+}
+
+document.getElementById('bedTime').addEventListener('change', updateSleepCalc);
+document.getElementById('wakeTime').addEventListener('change', updateSleepCalc);
 
 function clearForm() {
   FIELDS.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  document.getElementById('sleepCalc').textContent = '--';
   state.satisfaction = 3;
   state.fatigue      = 3;
   setRating('satisfaction', 3);
@@ -1286,9 +1328,10 @@ async function loadInputForm() {
       const el = document.getElementById(id);
       if (el && record[id] != null) el.value = record[id];
     });
+    updateSleepCalc();
     setRating('satisfaction', record.satisfaction || 3);
     setRating('fatigue',      record.fatigue      || 3);
-    if (record.waist || record.steps || record.water) {
+    if (record.waist || record.exerciseDuration || record.water) {
       if (!state.optionalOpen) toggleOptional();
     }
   }
@@ -1301,13 +1344,17 @@ async function saveRecord() {
     const el = document.getElementById(id);
     if (!el) return;
     const v = el.value.trim();
-    if (id === 'memo') {
+    if (id === 'memo' || id === 'bedTime' || id === 'wakeTime') {
       record[id] = v || null;
     } else {
-      record[id] = v !== '' ? (id === 'calorieIntake' || id === 'exerciseCalories' || id === 'steps' || id === 'water'
-        ? parseInt(v) : parseFloat(v)) : null;
+      record[id] = v !== '' ? (
+        id === 'calorieIntake' || id === 'exerciseCalories' || id === 'steps' || id === 'water' || id === 'bmr'
+          ? parseInt(v) : parseFloat(v)
+      ) : null;
     }
   });
+  // 睡眠時間を自動計算して保存
+  record.sleepHours   = calcSleep(record.bedTime, record.wakeTime);
   record.satisfaction = state.satisfaction;
   record.fatigue      = state.fatigue;
   record.updatedAt    = new Date().toISOString();
@@ -1572,16 +1619,18 @@ async function exportCSV() {
   const records = await dbGetAll();
   if (records.length === 0) { showToast('データがありません'); return; }
 
-  const headers = ['日付','体重(kg)','体脂肪率(%)','筋肉量(kg)',
+  const headers = ['日付','体重(kg)','体脂肪率(%)','筋肉量(kg)','基礎代謝(kcal)',
     '摂取カロリー(kcal)','タンパク質(g)','脂質(g)','炭水化物(g)',
-    '運動消費カロリー(kcal)','睡眠時間(h)','満足度(1-5)','疲労感(1-5)','メモ',
-    '腹囲(cm)','歩数','水分摂取量(ml)'];
+    '運動消費カロリー(kcal)','歩数','入眠時刻','起床時刻','睡眠時間(h)',
+    '満足度(1-5)','疲労感(1-5)','メモ',
+    '腹囲(cm)','運動時間(h)','水分摂取量(ml)'];
   const rows = records.map(r => [
-    r.date, r.weight??'', r.bodyFat??'', r.muscleMass??'',
+    r.date, r.weight??'', r.bodyFat??'', r.muscleMass??'', r.bmr??'',
     r.calorieIntake??'', r.protein??'', r.fat??'', r.carbs??'',
-    r.exerciseCalories??'', r.sleepHours??'', r.satisfaction??'', r.fatigue??'',
+    r.exerciseCalories??'', r.steps??'', r.bedTime??'', r.wakeTime??'', r.sleepHours??'',
+    r.satisfaction??'', r.fatigue??'',
     (r.memo||'').replace(/,/g,'，').replace(/\n/g,' '),
-    r.waist??'', r.steps??'', r.water??'',
+    r.waist??'', r.exerciseDuration??'', r.water??'',
   ]);
   const csv  = [headers, ...rows].map(r => r.join(',')).join('\n');
   const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' });
