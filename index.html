@@ -4,122 +4,72 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Health Log">
-  <meta name="theme-color" content="#0d0d14">
+  <meta name="theme-color" content="#f4f6f9">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="manifest" href="manifest.json">
   <title>Health Log</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    /* ═══════════════════════════════════════
-       CSS Variables & Reset
-    ═══════════════════════════════════════ */
     :root {
-      --bg:          #0d0d14;
-      --bg-card:     #13131e;
-      --bg-input:    #1a1a28;
-      --bg-section:  #17172400;
-      --border:      #2a2a40;
-      --border-focus:#6c63ff;
-
-      --accent:      #6c63ff;
-      --accent-soft: #3d3875;
-      --accent-glow: rgba(108,99,255,0.18);
-
-      --protein:     #ff7043;
-      --fat:         #ffd54f;
-      --carbs:       #66bb6a;
-      --exercise:    #26c6da;
-      --sleep:       #ab47bc;
-      --weight:      #f06292;
-      --satisfaction:#ffb300;
-      --fatigue:     #78909c;
-      --success:     #66bb6a;
-      --danger:      #ef5350;
-
-      --text-primary:   #ededf8;
-      --text-secondary: #7878a0;
-      --text-muted:     #3d3d58;
-      --text-accent:    #9d97ff;
-
-      --font-display: 'Syne', sans-serif;
-      --font-mono:    'DM Mono', monospace;
-
-      --radius-sm: 6px;
+      --bg:        #f4f6f9;
+      --bg-card:   #ffffff;
+      --bg-input:  #f0f2f5;
+      --border:    #e2e6eb;
+      --border-focus: #2563eb;
+      --accent:       #2563eb;
+      --accent-light: #eff6ff;
+      --col-weight:  #2563eb;
+      --col-fat:     #f59e0b;
+      --col-muscle:  #10b981;
+      --col-calorie: #ef4444;
+      --col-exercise:#06b6d4;
+      --col-sleep:   #8b5cf6;
+      --col-protein: #f97316;
+      --col-carbs:   #10b981;
+      --col-steps:   #06b6d4;
+      --col-sat:     #f59e0b;
+      --col-fatigue: #94a3b8;
+      --success:     #10b981;
+      --danger:      #ef4444;
+      --text-primary:   #1e293b;
+      --text-secondary: #64748b;
+      --text-muted:     #94a3b8;
+      --font: 'Noto Sans JP', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --radius-sm: 8px;
       --radius-md: 12px;
-      --radius-lg: 18px;
-      --radius-xl: 24px;
-
-      --tab-height: 64px;
-      --header-height: 56px;
+      --radius-lg: 16px;
+      --tab-height: 60px;
+      --header-height: 52px;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html, body {
       width: 100%; height: 100%;
-      background: var(--bg);
-      color: var(--text-primary);
-      font-family: var(--font-display);
-      -webkit-font-smoothing: antialiased;
-      overflow: hidden;
+      background: var(--bg); color: var(--text-primary);
+      font-family: var(--font); -webkit-font-smoothing: antialiased; overflow: hidden;
     }
-
-    /* ═══════════════════════════════════════
-       App Shell
-    ═══════════════════════════════════════ */
-    #app {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
+    #app { width: 100%; height: 100%; display: flex; flex-direction: column; }
 
     /* Header */
     .app-header {
-      height: var(--header-height);
-      background: var(--bg-card);
+      height: var(--header-height); background: var(--bg-card);
       border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      flex-shrink: 0;
-      padding-top: env(safe-area-inset-top);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; padding-top: env(safe-area-inset-top);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
-    .app-header h1 {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-primary);
-    }
-    .app-header .header-sub {
-      position: absolute;
-      right: 16px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-    }
+    .app-header h1 { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+    .header-date { position: absolute; right: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
 
-    /* Screen container */
-    .screens {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-    }
+    /* Screens */
+    .screens { flex: 1; overflow: hidden; position: relative; }
     .screen {
-      position: absolute;
-      inset: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-      display: none;
+      position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
+      -webkit-overflow-scrolling: touch; display: none;
       padding-bottom: calc(var(--tab-height) + env(safe-area-inset-bottom) + 16px);
     }
     .screen.active { display: block; }
@@ -128,587 +78,273 @@
     .tab-bar {
       height: calc(var(--tab-height) + env(safe-area-inset-bottom));
       padding-bottom: env(safe-area-inset-bottom);
-      background: var(--bg-card);
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-shrink: 0;
+      background: var(--bg-card); border-top: 1px solid var(--border);
+      display: flex; flex-shrink: 0; box-shadow: 0 -1px 4px rgba(0,0,0,0.05);
     }
     .tab-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: color 0.2s;
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3px;
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); transition: color 0.2s;
       -webkit-tap-highlight-color: transparent;
-      padding: 8px 0;
     }
     .tab-btn.active { color: var(--accent); }
-    .tab-btn .tab-icon { font-size: 22px; line-height: 1; }
-    .tab-btn .tab-label {
-      font-family: var(--font-display);
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
+    .tab-btn .tab-icon { font-size: 20px; line-height: 1; }
+    .tab-btn .tab-label { font-size: 10px; font-weight: 700; letter-spacing: 0.3px; }
 
-    /* ═══════════════════════════════════════
-       Common Components
-    ═══════════════════════════════════════ */
-    .screen-content { padding: 16px; }
+    /* Common */
+    .screen-content { padding: 14px; }
+    .section-header { display: flex; align-items: center; gap: 8px; margin: 20px 0 10px; }
+    .section-bar { width: 4px; height: 16px; border-radius: 2px; flex-shrink: 0; }
+    .section-title { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); }
 
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 24px 0 12px;
-    }
-    .section-bar {
-      width: 3px; height: 16px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-    }
-
-    .field { margin-bottom: 14px; }
-    .field-label {
-      font-size: 11px;
-      color: var(--text-secondary);
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-      display: block;
-    }
+    /* Fields */
+    .field { margin-bottom: 12px; }
+    .field-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; display: block; }
     .input-wrap {
-      display: flex;
-      align-items: center;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 0 14px;
-      height: 48px;
-      transition: border-color 0.2s;
+      display: flex; align-items: center; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 0 14px; height: 50px; transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .input-wrap:focus-within { border-color: var(--border-focus); }
+    .input-wrap:focus-within { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
     .input-wrap input {
-      flex: 1;
-      background: none;
-      border: none;
-      outline: none;
-      font-family: var(--font-mono);
-      font-size: 20px;
-      font-weight: 500;
-      color: var(--text-primary);
-      -webkit-appearance: none;
+      flex: 1; background: none; border: none; outline: none;
+      font-family: var(--font-mono); font-size: 20px; font-weight: 500;
+      color: var(--text-primary); -webkit-appearance: none; min-width: 0;
     }
     .input-wrap input::placeholder { color: var(--text-muted); }
-    .input-unit {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-left: 4px;
-      flex-shrink: 0;
+    .input-unit { font-size: 13px; color: var(--text-muted); margin-left: 6px; flex-shrink: 0; font-weight: 500; }
+
+    /* Sleep row */
+    .sleep-row { display: flex; gap: 10px; margin-bottom: 0; }
+    .sleep-item { flex: 1; }
+    .sleep-result {
+      display: flex; align-items: center; background: var(--accent-light);
+      border: 1px solid rgba(37,99,235,0.2); border-radius: var(--radius-md);
+      padding: 0 14px; height: 50px;
     }
+    .sleep-result-val { flex: 1; font-family: var(--font-mono); font-size: 20px; font-weight: 500; color: var(--col-sleep); }
 
-    /* Row layout */
-    .row { display: flex; flex-direction: column; gap: 0; }
-    .row .field { width: 100%; }
-
-    /* PFC Fields */
-    .pfc-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    /* PFC */
+    .pfc-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
     .pfc-item { width: 100%; }
-    .pfc-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-      display: block;
-    }
+    .pfc-label { font-size: 12px; font-weight: 700; margin-bottom: 5px; display: block; }
     .pfc-wrap {
-      display: flex;
-      align-items: center;
-      background: var(--bg-input);
-      border: 1px solid;
-      border-radius: var(--radius-md);
-      padding: 0 14px;
-      height: 48px;
+      display: flex; align-items: center; background: var(--bg-card);
+      border: 1px solid; border-radius: var(--radius-md); padding: 0 14px; height: 50px;
     }
     .pfc-wrap input {
-      flex: 1;
-      background: none;
-      border: none;
-      outline: none;
-      font-family: var(--font-mono);
-      font-size: 20px;
-      font-weight: 500;
-      min-width: 0;
-      -webkit-appearance: none;
+      flex: 1; background: none; border: none; outline: none;
+      font-family: var(--font-mono); font-size: 20px; font-weight: 500;
+      -webkit-appearance: none; min-width: 0;
     }
-    .pfc-unit {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      opacity: 0.6;
-      margin-left: 4px;
-    }
+    .pfc-unit { font-size: 13px; opacity: 0.6; margin-left: 6px; }
 
-    /* Rating Selector */
+    /* Rating */
     .rating-row { display: flex; gap: 6px; margin-top: 6px; }
     .rating-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 4px;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all 0.15s;
-      -webkit-tap-highlight-color: transparent;
-      gap: 2px;
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 10px 4px; background: var(--bg-card); border: 1.5px solid var(--border);
+      border-radius: var(--radius-md); cursor: pointer; transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent; gap: 3px;
     }
-    .rating-btn .rating-num {
-      font-family: var(--font-mono);
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-secondary);
-    }
-    .rating-btn .rating-sub {
-      font-size: 8px;
-      color: var(--text-muted);
-      text-align: center;
-      line-height: 1.2;
-    }
-    .rating-btn.active .rating-num { color: #fff; }
-    .rating-btn.active .rating-sub { color: rgba(255,255,255,0.7); }
+    .rating-btn .rating-num { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--text-muted); }
+    .rating-btn .rating-sub { font-size: 8px; color: var(--text-muted); text-align: center; }
+    .rating-btn.active .rating-num, .rating-btn.active .rating-sub { color: #fff; }
 
     /* Memo */
     textarea {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
-      font-family: var(--font-display);
-      font-size: 14px;
-      color: var(--text-primary);
-      resize: none;
-      outline: none;
-      min-height: 80px;
-      -webkit-appearance: none;
-      transition: border-color 0.2s;
+      width: 100%; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 12px 14px;
+      font-family: var(--font); font-size: 14px; color: var(--text-primary);
+      resize: none; outline: none; min-height: 80px; -webkit-appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    textarea:focus { border-color: var(--border-focus); }
+    textarea:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
     textarea::placeholder { color: var(--text-muted); }
 
-    /* Optional toggle */
+    /* Optional */
     .optional-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      margin-top: 8px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 14px 16px; margin-top: 6px;
+      cursor: pointer; -webkit-tap-highlight-color: transparent;
     }
-    .optional-toggle-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-secondary);
-    }
-    .toggle-arrow { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; }
-    .toggle-arrow.open { transform: rotate(180deg); }
+    .optional-toggle-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+    .toggle-arrow { font-size: 11px; color: var(--text-muted); transition: transform 0.2s; }
     .optional-panel {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 var(--radius-md) var(--radius-md);
-      padding: 14px;
-      display: none;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md);
+      padding: 14px; display: none;
     }
     .optional-panel.open { display: block; }
 
     /* Save Button */
     .save-btn {
-      width: 100%;
-      height: 54px;
-      background: var(--accent);
-      border: none;
-      border-radius: var(--radius-lg);
-      font-family: var(--font-display);
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 1px;
-      cursor: pointer;
-      margin: 24px 0;
-      box-shadow: 0 4px 20px rgba(108,99,255,0.4);
-      transition: opacity 0.2s, transform 0.1s;
-      -webkit-tap-highlight-color: transparent;
+      width: 100%; height: 52px; background: var(--accent); border: none;
+      border-radius: var(--radius-lg); font-family: var(--font); font-size: 15px;
+      font-weight: 700; color: #fff; cursor: pointer; margin: 20px 0;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+      transition: opacity 0.2s, transform 0.1s; -webkit-tap-highlight-color: transparent;
     }
-    .save-btn:active { opacity: 0.8; transform: scale(0.98); }
+    .save-btn:active { opacity: 0.85; transform: scale(0.98); }
 
-    /* ═══════════════════════════════════════
-       Date Navigator
-    ═══════════════════════════════════════ */
+    /* Date Nav */
     .date-nav {
-      display: flex;
-      align-items: center;
-      background: var(--bg-card);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 16px;
-      gap: 12px;
-      flex-shrink: 0;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      display: flex; align-items: center; background: var(--bg-card);
+      border-bottom: 1px solid var(--border); padding: 10px 14px; gap: 10px;
+      flex-shrink: 0; position: sticky; top: 0; z-index: 10;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     .date-arrow {
-      width: 38px; height: 38px;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 22px;
-      color: var(--text-primary);
+      width: 36px; height: 36px; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 20px; color: var(--text-primary);
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      -webkit-tap-highlight-color: transparent;
-      transition: opacity 0.2s;
+      cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent;
     }
-    .date-arrow:disabled { opacity: 0.25; }
+    .date-arrow:disabled { opacity: 0.3; }
     .date-center { flex: 1; text-align: center; }
-    .date-main {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-    .date-meta {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 3px;
-    }
+    .date-main { font-size: 15px; font-weight: 700; }
+    .date-meta { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 2px; }
     .date-wday { font-size: 11px; color: var(--text-secondary); }
-    .badge {
-      font-size: 9px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      padding: 2px 8px;
-      border-radius: 100px;
-    }
+    .badge { font-size: 9px; font-weight: 800; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 100px; }
     .badge-today { background: var(--accent); color: #fff; }
-    .badge-saved {
-      background: rgba(102,187,106,0.2);
-      color: var(--success);
-      border: 1px solid rgba(102,187,106,0.4);
-    }
+    .badge-saved { background: rgba(16,185,129,0.12); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
 
-    /* ═══════════════════════════════════════
-       Graph Screen
-    ═══════════════════════════════════════ */
+    /* Graph */
     .period-bar {
-      display: flex;
-      gap: 8px;
-      padding: 12px 16px;
-      background: var(--bg-card);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      display: flex; gap: 8px; padding: 10px 14px; background: var(--bg-card);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10;
     }
     .period-btn {
-      flex: 1;
-      padding: 8px 0;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-family: var(--font-display);
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.15s;
+      flex: 1; padding: 7px 0; background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-family: var(--font); font-size: 12px;
+      font-weight: 700; color: var(--text-secondary); cursor: pointer; transition: all 0.15s;
       -webkit-tap-highlight-color: transparent;
     }
-    .period-btn.active {
-      background: var(--accent-glow);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .graph-tabs {
-      display: flex;
-      gap: 0;
-      padding: 0 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-card);
-    }
+    .period-btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+    .graph-tabs { display: flex; background: var(--bg-card); border-bottom: 1px solid var(--border); }
     .graph-tab {
-      flex: 1;
-      padding: 12px 0;
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
-      font-family: var(--font-display);
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all 0.2s;
+      flex: 1; padding: 11px 0; background: none; border: none;
+      border-bottom: 2px solid transparent; font-family: var(--font); font-size: 13px;
+      font-weight: 700; color: var(--text-secondary); cursor: pointer; transition: all 0.2s;
       -webkit-tap-highlight-color: transparent;
     }
-    .graph-tab.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
-    }
+    .graph-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
     .summary-banner {
-      display: flex;
-      gap: 10px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      margin-bottom: 14px;
+      display: flex; gap: 10px; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 14px; margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     .summary-item { flex: 1; text-align: center; }
-    .summary-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 4px; }
-    .summary-value {
-      font-family: var(--font-mono);
-      font-size: 16px;
-      font-weight: 500;
-    }
+    .summary-label { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+    .summary-value { font-family: var(--font-mono); font-size: 15px; font-weight: 500; }
 
     .chart-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      margin-bottom: 14px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .chart-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      letter-spacing: 0.5px;
-      margin-bottom: 14px;
-    }
+    .chart-title { font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 14px; }
     .chart-wrap { position: relative; width: 100%; }
-    .chart-empty {
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
+    .chart-empty { height: 70px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; }
+    .legend-row { display: flex; gap: 14px; margin-bottom: 10px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .legend-text { font-size: 11px; color: var(--text-secondary); }
 
-    .pfc-legend {
-      display: flex;
-      gap: 14px;
-      margin-bottom: 10px;
-    }
-    .pfc-legend-item { display: flex; align-items: center; gap: 5px; }
-    .pfc-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-    .pfc-legend-text { font-size: 10px; color: var(--text-secondary); }
-
-    /* History List */
     .history-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      margin-bottom: 14px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .history-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
-    }
+    .history-title { font-size: 12px; font-weight: 700; color: var(--text-secondary); margin-bottom: 10px; }
     .history-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      font-family: var(--font-mono);
+      display: flex; align-items: center; gap: 8px; padding: 9px 0;
+      border-bottom: 1px solid var(--border); font-family: var(--font-mono);
     }
     .history-row:last-child { border-bottom: none; }
     .history-date { width: 36px; font-size: 10px; color: var(--text-muted); }
     .history-val { flex: 1; font-size: 11px; font-weight: 500; text-align: right; }
     .history-stars { font-size: 9px; letter-spacing: -1px; }
 
-    /* ═══════════════════════════════════════
-       Settings Screen
-    ═══════════════════════════════════════ */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 14px;
-    }
+    /* Settings */
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
     .stats-cell {
-      background: var(--bg-card);
-      border: 1px solid;
-      border-radius: var(--radius-md);
-      padding: 14px 8px;
-      text-align: center;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 14px 8px; text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .stats-cell-value {
-      font-family: var(--font-mono);
-      font-size: 19px;
-      font-weight: 500;
-    }
+    .stats-cell-value { font-family: var(--font-mono); font-size: 19px; font-weight: 500; }
     .stats-cell-unit { font-size: 9px; color: var(--text-muted); margin-top: 1px; }
-    .stats-cell-label { font-size: 10px; color: var(--text-secondary); margin-top: 6px; }
+    .stats-cell-label { font-size: 10px; color: var(--text-secondary); margin-top: 5px; }
 
     .weight-range {
-      display: flex;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      margin-bottom: 14px;
+      display: flex; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 14px; margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     .weight-range-item { flex: 1; text-align: center; }
-    .weight-range-sep { width: 1px; background: var(--border); margin: 0 10px; }
+    .weight-range-sep { width: 1px; background: var(--border); margin: 0 8px; }
     .weight-range-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
-    .weight-range-val {
-      font-family: var(--font-mono);
-      font-size: 18px;
-      font-weight: 500;
-    }
+    .weight-range-val { font-family: var(--font-mono); font-size: 17px; font-weight: 500; }
 
     .settings-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      margin-bottom: 14px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); overflow: hidden; margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
     .settings-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 16px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: background 0.15s;
+      display: flex; align-items: center; gap: 12px; padding: 15px;
+      cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 0.15s;
     }
-    .settings-row:active { background: var(--bg-input); }
+    .settings-row:active { background: var(--bg); }
     .settings-row + .settings-row { border-top: 1px solid var(--border); }
-    .settings-icon {
-      width: 38px; height: 38px;
-      border-radius: var(--radius-sm);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
+    .settings-icon { width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
     .settings-text { flex: 1; }
-    .settings-label { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .settings-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
     .settings-label.danger { color: var(--danger); }
     .settings-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
     .settings-chevron { font-size: 18px; color: var(--text-muted); }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 16px;
-    }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 15px; }
     .info-row + .info-row { border-top: 1px solid var(--border); }
     .info-label { font-size: 14px; color: var(--text-secondary); }
-    .info-value { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+    .info-value { font-size: 14px; font-weight: 500; }
 
-    /* No data */
-    .no-data {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 80px 32px;
-      gap: 12px;
-      text-align: center;
-    }
-    .no-data-emoji { font-size: 48px; }
-    .no-data-title { font-size: 18px; font-weight: 700; color: var(--text-secondary); }
-    .no-data-sub { font-size: 13px; color: var(--text-muted); }
-
-    /* Toast */
-    .toast {
-      position: fixed;
-      bottom: calc(var(--tab-height) + env(safe-area-inset-bottom) + 16px);
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 10px 20px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-primary);
-      opacity: 0;
-      transition: all 0.3s;
-      pointer-events: none;
-      z-index: 1000;
-      white-space: nowrap;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* Graph tab panels */
+    .section-block { margin-bottom: 18px; }
+    .section-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; padding-left: 2px; }
     .graph-panel { display: none; }
     .graph-panel.active { display: block; }
 
-    /* Section label for settings */
-    .section-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-secondary);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 8px;
+    .no-data { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 32px; gap: 10px; text-align: center; }
+    .no-data-emoji { font-size: 44px; }
+    .no-data-title { font-size: 17px; font-weight: 700; color: var(--text-secondary); }
+    .no-data-sub { font-size: 13px; color: var(--text-muted); }
+
+    .toast {
+      position: fixed;
+      bottom: calc(var(--tab-height) + env(safe-area-inset-bottom) + 14px);
+      left: 50%; transform: translateX(-50%) translateY(16px);
+      background: var(--text-primary); border-radius: 100px;
+      padding: 10px 20px; font-size: 13px; font-weight: 600; color: #fff;
+      opacity: 0; transition: all 0.3s; pointer-events: none;
+      z-index: 1000; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     }
-    .section-block { margin-bottom: 20px; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 <div id="app">
-  <!-- Header -->
   <header class="app-header">
     <h1>Health Log</h1>
-    <span class="header-sub" id="header-date"></span>
+    <span class="header-date" id="header-date"></span>
   </header>
 
-  <!-- Screens -->
   <div class="screens">
 
-    <!-- ════════════════════════════════
-         INPUT SCREEN
-    ════════════════════════════════ -->
+    <!-- INPUT -->
     <div class="screen active" id="screen-input">
-      <!-- Date Navigator -->
       <div class="date-nav">
         <button class="date-arrow" id="date-prev">‹</button>
         <div class="date-center">
@@ -721,212 +357,89 @@
         </div>
         <button class="date-arrow" id="date-next">›</button>
       </div>
-
       <div class="screen-content">
-        <!-- 身体データ -->
-        <div class="section-header">
-          <div class="section-bar" style="background:var(--weight)"></div>
-          <span class="section-title">Body Data</span>
-        </div>
-        <div class="row">
-          <div class="field">
-            <label class="field-label">体重</label>
-            <div class="input-wrap">
-              <input type="number" inputmode="decimal" id="weight" placeholder="--">
-              <span class="input-unit">kg</span>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">体脂肪率</label>
-            <div class="input-wrap">
-              <input type="number" inputmode="decimal" id="bodyFat" placeholder="--">
-              <span class="input-unit">%</span>
-            </div>
-          </div>
-        </div>
-        <div class="field">
-          <label class="field-label">筋肉量</label>
-          <div class="input-wrap">
-            <input type="number" inputmode="decimal" id="muscleMass" placeholder="--">
-            <span class="input-unit">kg</span>
-          </div>
-        </div>
-        <div class="field">
-          <label class="field-label">基礎代謝</label>
-          <div class="input-wrap">
-            <input type="number" inputmode="numeric" id="bmr" placeholder="--">
-            <span class="input-unit">kcal</span>
-          </div>
-        </div>
 
-        <!-- 食事 -->
-        <div class="section-header">
-          <div class="section-bar" style="background:var(--protein)"></div>
-          <span class="section-title">Nutrition</span>
-        </div>
-        <div class="field">
-          <label class="field-label">摂取カロリー</label>
-          <div class="input-wrap">
-            <input type="number" inputmode="numeric" id="calorieIntake" placeholder="--">
-            <span class="input-unit">kcal</span>
-          </div>
-        </div>
+        <div class="section-header"><div class="section-bar" style="background:var(--col-weight)"></div><span class="section-title">Body Data</span></div>
+        <div class="field"><label class="field-label">体重</label><div class="input-wrap"><input type="number" inputmode="decimal" id="weight" placeholder="0.0"><span class="input-unit">kg</span></div></div>
+        <div class="field"><label class="field-label">体脂肪率</label><div class="input-wrap"><input type="number" inputmode="decimal" id="bodyFat" placeholder="0.0"><span class="input-unit">%</span></div></div>
+        <div class="field"><label class="field-label">筋肉量</label><div class="input-wrap"><input type="number" inputmode="decimal" id="muscleMass" placeholder="0.0"><span class="input-unit">kg</span></div></div>
+        <div class="field"><label class="field-label">基礎代謝</label><div class="input-wrap"><input type="number" inputmode="numeric" id="bmr" placeholder="0"><span class="input-unit">kcal</span></div></div>
+
+        <div class="section-header"><div class="section-bar" style="background:var(--col-calorie)"></div><span class="section-title">Nutrition</span></div>
+        <div class="field"><label class="field-label">摂取カロリー</label><div class="input-wrap"><input type="number" inputmode="numeric" id="calorieIntake" placeholder="0"><span class="input-unit">kcal</span></div></div>
         <label class="field-label" style="margin-bottom:8px">PFCバランス</label>
         <div class="pfc-row">
-          <div class="pfc-item">
-            <span class="pfc-label" style="color:var(--protein)">P タンパク質</span>
-            <div class="pfc-wrap" style="border-color:rgba(255,112,67,0.4)">
-              <input type="number" inputmode="decimal" id="protein" placeholder="--" style="color:var(--protein)">
-              <span class="pfc-unit" style="color:var(--protein)">g</span>
-            </div>
-          </div>
-          <div class="pfc-item">
-            <span class="pfc-label" style="color:var(--fat)">F 脂質</span>
-            <div class="pfc-wrap" style="border-color:rgba(255,213,79,0.4)">
-              <input type="number" inputmode="decimal" id="fat" placeholder="--" style="color:var(--fat)">
-              <span class="pfc-unit" style="color:var(--fat)">g</span>
-            </div>
-          </div>
-          <div class="pfc-item">
-            <span class="pfc-label" style="color:var(--carbs)">C 炭水化物</span>
-            <div class="pfc-wrap" style="border-color:rgba(102,187,106,0.4)">
-              <input type="number" inputmode="decimal" id="carbs" placeholder="--" style="color:var(--carbs)">
-              <span class="pfc-unit" style="color:var(--carbs)">g</span>
-            </div>
-          </div>
+          <div class="pfc-item"><span class="pfc-label" style="color:var(--col-protein)">P タンパク質</span><div class="pfc-wrap" style="border-color:rgba(249,115,22,0.35)"><input type="number" inputmode="decimal" id="protein" placeholder="0" style="color:var(--col-protein)"><span class="pfc-unit" style="color:var(--col-protein)">g</span></div></div>
+          <div class="pfc-item"><span class="pfc-label" style="color:var(--col-fat)">F 脂質</span><div class="pfc-wrap" style="border-color:rgba(245,158,11,0.35)"><input type="number" inputmode="decimal" id="fat" placeholder="0" style="color:var(--col-fat)"><span class="pfc-unit" style="color:var(--col-fat)">g</span></div></div>
+          <div class="pfc-item"><span class="pfc-label" style="color:var(--col-carbs)">C 炭水化物</span><div class="pfc-wrap" style="border-color:rgba(16,185,129,0.35)"><input type="number" inputmode="decimal" id="carbs" placeholder="0" style="color:var(--col-carbs)"><span class="pfc-unit" style="color:var(--col-carbs)">g</span></div></div>
         </div>
 
-        <!-- 運動・睡眠 -->
-        <div class="section-header">
-          <div class="section-bar" style="background:var(--exercise)"></div>
-          <span class="section-title">Activity &amp; Sleep</span>
-        </div>
-        <div class="field">
-          <label class="field-label">運動消費カロリー</label>
-          <div class="input-wrap">
-            <input type="number" inputmode="numeric" id="exerciseCalories" placeholder="--">
-            <span class="input-unit">kcal</span>
-          </div>
-        </div>
-        <div class="field">
-          <label class="field-label">歩数</label>
-          <div class="input-wrap">
-            <input type="number" inputmode="numeric" id="steps" placeholder="--">
-            <span class="input-unit">歩</span>
-          </div>
-        </div>
+        <div class="section-header"><div class="section-bar" style="background:var(--col-exercise)"></div><span class="section-title">Activity &amp; Sleep</span></div>
+        <div class="field"><label class="field-label">運動消費カロリー</label><div class="input-wrap"><input type="number" inputmode="numeric" id="exerciseCalories" placeholder="0"><span class="input-unit">kcal</span></div></div>
+        <div class="field"><label class="field-label">歩数</label><div class="input-wrap"><input type="number" inputmode="numeric" id="steps" placeholder="0"><span class="input-unit">歩</span></div></div>
+
         <div class="field">
           <label class="field-label">入眠時刻</label>
-          <div class="input-wrap">
-            <input type="time" id="bedTime" style="color:var(--text-primary);font-family:var(--font-mono);font-size:18px;font-weight:500;flex:1;background:none;border:none;outline:none;-webkit-appearance:none;">
+          <div class="sleep-row">
+            <div class="sleep-item"><div class="input-wrap"><input type="number" inputmode="numeric" id="bedH" placeholder="23" min="0" max="23"><span class="input-unit">時</span></div></div>
+            <div class="sleep-item"><div class="input-wrap"><input type="number" inputmode="numeric" id="bedM" placeholder="00" min="0" max="59"><span class="input-unit">分</span></div></div>
           </div>
         </div>
         <div class="field">
           <label class="field-label">起床時刻</label>
-          <div class="input-wrap">
-            <input type="time" id="wakeTime" style="color:var(--text-primary);font-family:var(--font-mono);font-size:18px;font-weight:500;flex:1;background:none;border:none;outline:none;-webkit-appearance:none;">
+          <div class="sleep-row">
+            <div class="sleep-item"><div class="input-wrap"><input type="number" inputmode="numeric" id="wakeH" placeholder="7" min="0" max="23"><span class="input-unit">時</span></div></div>
+            <div class="sleep-item"><div class="input-wrap"><input type="number" inputmode="numeric" id="wakeM" placeholder="00" min="0" max="59"><span class="input-unit">分</span></div></div>
           </div>
         </div>
         <div class="field">
-          <label class="field-label">睡眠時間（自動計算）</label>
-          <div class="input-wrap" style="background:rgba(171,71,188,0.08);border-color:rgba(171,71,188,0.3)">
-            <span id="sleepCalc" style="font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--sleep);flex:1">--</span>
-            <span class="input-unit">h</span>
-          </div>
+          <label class="field-label">睡眠時間</label>
+          <div class="sleep-result"><span id="sleepCalc" class="sleep-result-val">--</span><span class="input-unit">h</span></div>
         </div>
 
-        <!-- コンディション -->
-        <div class="section-header">
-          <div class="section-bar" style="background:var(--satisfaction)"></div>
-          <span class="section-title">Condition</span>
-        </div>
+        <div class="section-header"><div class="section-bar" style="background:var(--col-sat)"></div><span class="section-title">Condition</span></div>
         <div class="field">
           <label class="field-label">1日の満足度</label>
           <div class="rating-row" id="rating-satisfaction">
-            <button class="rating-btn" data-val="1" onclick="setRating('satisfaction',1)">
-              <span class="rating-num">1</span><span class="rating-sub">低い</span>
-            </button>
-            <button class="rating-btn" data-val="2" onclick="setRating('satisfaction',2)">
-              <span class="rating-num">2</span><span class="rating-sub">やや低</span>
-            </button>
-            <button class="rating-btn active" data-val="3" onclick="setRating('satisfaction',3)" style="background:var(--satisfaction);border-color:var(--satisfaction)">
-              <span class="rating-num" style="color:#fff">3</span><span class="rating-sub" style="color:rgba(255,255,255,0.7)">普通</span>
-            </button>
-            <button class="rating-btn" data-val="4" onclick="setRating('satisfaction',4)">
-              <span class="rating-num">4</span><span class="rating-sub">やや高</span>
-            </button>
-            <button class="rating-btn" data-val="5" onclick="setRating('satisfaction',5)">
-              <span class="rating-num">5</span><span class="rating-sub">高い</span>
-            </button>
+            <button class="rating-btn" data-val="1" onclick="setRating('satisfaction',1)"><span class="rating-num">1</span><span class="rating-sub">低い</span></button>
+            <button class="rating-btn" data-val="2" onclick="setRating('satisfaction',2)"><span class="rating-num">2</span><span class="rating-sub">やや低</span></button>
+            <button class="rating-btn" data-val="3" onclick="setRating('satisfaction',3)"><span class="rating-num">3</span><span class="rating-sub">普通</span></button>
+            <button class="rating-btn" data-val="4" onclick="setRating('satisfaction',4)"><span class="rating-num">4</span><span class="rating-sub">やや高</span></button>
+            <button class="rating-btn" data-val="5" onclick="setRating('satisfaction',5)"><span class="rating-num">5</span><span class="rating-sub">高い</span></button>
           </div>
         </div>
         <div class="field">
           <label class="field-label">疲労感</label>
           <div class="rating-row" id="rating-fatigue">
-            <button class="rating-btn" data-val="1" onclick="setRating('fatigue',1)">
-              <span class="rating-num">1</span><span class="rating-sub">なし</span>
-            </button>
-            <button class="rating-btn" data-val="2" onclick="setRating('fatigue',2)">
-              <span class="rating-num">2</span><span class="rating-sub">わずか</span>
-            </button>
-            <button class="rating-btn active" data-val="3" onclick="setRating('fatigue',3)" style="background:var(--fatigue);border-color:var(--fatigue)">
-              <span class="rating-num" style="color:#fff">3</span><span class="rating-sub" style="color:rgba(255,255,255,0.7)">普通</span>
-            </button>
-            <button class="rating-btn" data-val="4" onclick="setRating('fatigue',4)">
-              <span class="rating-num">4</span><span class="rating-sub">かなり</span>
-            </button>
-            <button class="rating-btn" data-val="5" onclick="setRating('fatigue',5)">
-              <span class="rating-num">5</span><span class="rating-sub">極度</span>
-            </button>
+            <button class="rating-btn" data-val="1" onclick="setRating('fatigue',1)"><span class="rating-num">1</span><span class="rating-sub">なし</span></button>
+            <button class="rating-btn" data-val="2" onclick="setRating('fatigue',2)"><span class="rating-num">2</span><span class="rating-sub">わずか</span></button>
+            <button class="rating-btn" data-val="3" onclick="setRating('fatigue',3)"><span class="rating-num">3</span><span class="rating-sub">普通</span></button>
+            <button class="rating-btn" data-val="4" onclick="setRating('fatigue',4)"><span class="rating-num">4</span><span class="rating-sub">かなり</span></button>
+            <button class="rating-btn" data-val="5" onclick="setRating('fatigue',5)"><span class="rating-num">5</span><span class="rating-sub">極度</span></button>
           </div>
         </div>
 
-        <!-- メモ -->
-        <div class="section-header">
-          <div class="section-bar" style="background:var(--text-secondary)"></div>
-          <span class="section-title">Memo</span>
-        </div>
+        <div class="section-header"><div class="section-bar" style="background:var(--text-muted)"></div><span class="section-title">Memo</span></div>
         <textarea id="memo" placeholder="今日の気づき、体調の変化など..."></textarea>
 
-        <!-- 任意項目 -->
         <div class="optional-toggle" onclick="toggleOptional()">
-          <span class="optional-toggle-label">▼ 任意項目（腹囲 / 運動時間 / 水分）</span>
-          <span class="toggle-arrow" id="toggle-arrow">▲</span>
+          <span class="optional-toggle-label">任意項目（腹囲 / 運動時間 / 水分）</span>
+          <span class="toggle-arrow" id="toggle-arrow">▼</span>
         </div>
         <div class="optional-panel" id="optional-panel">
-          <div class="field">
-            <label class="field-label">腹囲</label>
-            <div class="input-wrap">
-              <input type="number" inputmode="decimal" id="waist" placeholder="--">
-              <span class="input-unit">cm</span>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">運動時間</label>
-            <div class="input-wrap">
-              <input type="number" inputmode="decimal" id="exerciseDuration" placeholder="--">
-              <span class="input-unit">時間</span>
-            </div>
-          </div>
-          <div class="field">
-            <label class="field-label">水分摂取量</label>
-            <div class="input-wrap">
-              <input type="number" inputmode="numeric" id="water" placeholder="--">
-              <span class="input-unit">ml</span>
-            </div>
-          </div>
+          <div class="field"><label class="field-label">腹囲</label><div class="input-wrap"><input type="number" inputmode="decimal" id="waist" placeholder="0.0"><span class="input-unit">cm</span></div></div>
+          <div class="field"><label class="field-label">運動時間</label><div class="input-wrap"><input type="number" inputmode="decimal" id="exerciseDuration" placeholder="0.0"><span class="input-unit">時間</span></div></div>
+          <div class="field"><label class="field-label">水分摂取量</label><div class="input-wrap"><input type="number" inputmode="numeric" id="water" placeholder="0"><span class="input-unit">ml</span></div></div>
         </div>
 
         <button class="save-btn" id="save-btn" onclick="saveRecord()">保存する</button>
       </div>
     </div>
 
-    <!-- ════════════════════════════════
-         GRAPH SCREEN
-    ════════════════════════════════ -->
+    <!-- GRAPH -->
     <div class="screen" id="screen-graph">
       <div class="period-bar">
-        <button class="period-btn" data-days="7"  onclick="setPeriod(7)">7日</button>
+        <button class="period-btn" data-days="7" onclick="setPeriod(7)">7日</button>
         <button class="period-btn" data-days="14" onclick="setPeriod(14)">14日</button>
         <button class="period-btn active" data-days="30" onclick="setPeriod(30)">30日</button>
         <button class="period-btn" data-days="90" onclick="setPeriod(90)">90日</button>
@@ -936,97 +449,47 @@
         <button class="graph-tab" onclick="setGraphTab('nutrition')">食事</button>
         <button class="graph-tab" onclick="setGraphTab('condition')">コンディション</button>
       </div>
-
       <div class="screen-content">
-        <!-- Summary -->
         <div class="summary-banner" id="summary-banner" style="display:none">
-          <div class="summary-item">
-            <div class="summary-label">直近の体重</div>
-            <div class="summary-value" id="sum-weight" style="color:var(--weight)">--</div>
-          </div>
-          <div class="summary-item">
-            <div class="summary-label">期間変化</div>
-            <div class="summary-value" id="sum-diff">--</div>
-          </div>
-          <div class="summary-item">
-            <div class="summary-label">記録日数</div>
-            <div class="summary-value" id="sum-days" style="color:var(--accent)">--</div>
-          </div>
+          <div class="summary-item"><div class="summary-label">直近の体重</div><div class="summary-value" id="sum-weight" style="color:var(--col-weight)">--</div></div>
+          <div class="summary-item"><div class="summary-label">期間変化</div><div class="summary-value" id="sum-diff">--</div></div>
+          <div class="summary-item"><div class="summary-label">記録日数</div><div class="summary-value" id="sum-days" style="color:var(--accent)">--</div></div>
         </div>
+        <div id="no-graph-data" class="no-data" style="display:none"><div class="no-data-emoji">📊</div><div class="no-data-title">データがありません</div><div class="no-data-sub">入力画面から記録を始めましょう</div></div>
 
-        <div id="no-graph-data" class="no-data" style="display:none">
-          <div class="no-data-emoji">📊</div>
-          <div class="no-data-title">データがありません</div>
-          <div class="no-data-sub">入力画面から記録を始めましょう</div>
-        </div>
-
-        <!-- Body Tab -->
         <div class="graph-panel active" id="panel-body">
-          <div class="chart-card">
-            <div class="chart-title">⚖️  体重 (kg)</div>
-            <div class="chart-wrap"><canvas id="chart-weight"></canvas></div>
-            <div class="chart-empty" id="empty-weight" style="display:none">データがありません</div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">💧  体脂肪率 (%)</div>
-            <div class="chart-wrap"><canvas id="chart-bodyfat"></canvas></div>
-            <div class="chart-empty" id="empty-bodyfat" style="display:none">データがありません</div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">💪  筋肉量 (kg)</div>
-            <div class="chart-wrap"><canvas id="chart-muscle"></canvas></div>
-            <div class="chart-empty" id="empty-muscle" style="display:none">データがありません</div>
-          </div>
+          <div class="chart-card"><div class="chart-title">⚖️  体重 (kg)</div><div class="chart-wrap"><canvas id="chart-weight"></canvas></div><div class="chart-empty" id="empty-weight" style="display:none">データがありません</div></div>
+          <div class="chart-card"><div class="chart-title">💧  体脂肪率 (%)</div><div class="chart-wrap"><canvas id="chart-bodyfat"></canvas></div><div class="chart-empty" id="empty-bodyfat" style="display:none">データがありません</div></div>
+          <div class="chart-card"><div class="chart-title">💪  筋肉量 (kg)</div><div class="chart-wrap"><canvas id="chart-muscle"></canvas></div><div class="chart-empty" id="empty-muscle" style="display:none">データがありません</div></div>
         </div>
 
-        <!-- Nutrition Tab -->
         <div class="graph-panel" id="panel-nutrition">
-          <div class="chart-card">
-            <div class="chart-title">🍽  摂取カロリー (kcal)</div>
-            <div class="chart-wrap"><canvas id="chart-calorie"></canvas></div>
-            <div class="chart-empty" id="empty-calorie" style="display:none">データがありません</div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">🏃  運動消費カロリー (kcal)</div>
-            <div class="chart-wrap"><canvas id="chart-exercise"></canvas></div>
-            <div class="chart-empty" id="empty-exercise" style="display:none">データがありません</div>
-          </div>
+          <div class="chart-card"><div class="chart-title">🍽  摂取カロリー (kcal)</div><div class="chart-wrap"><canvas id="chart-calorie"></canvas></div><div class="chart-empty" id="empty-calorie" style="display:none">データがありません</div></div>
+          <div class="chart-card"><div class="chart-title">🏃  運動消費カロリー (kcal)</div><div class="chart-wrap"><canvas id="chart-exercise"></canvas></div><div class="chart-empty" id="empty-exercise" style="display:none">データがありません</div></div>
           <div class="chart-card">
             <div class="chart-title">🥩  PFCバランス (g)</div>
-            <div class="pfc-legend">
-              <div class="pfc-legend-item"><div class="pfc-legend-dot" style="background:var(--protein)"></div><span class="pfc-legend-text">P タンパク質</span></div>
-              <div class="pfc-legend-item"><div class="pfc-legend-dot" style="background:var(--fat)"></div><span class="pfc-legend-text">F 脂質</span></div>
-              <div class="pfc-legend-item"><div class="pfc-legend-dot" style="background:var(--carbs)"></div><span class="pfc-legend-text">C 炭水化物</span></div>
+            <div class="legend-row">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--col-protein)"></div><span class="legend-text">P タンパク質</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--col-fat)"></div><span class="legend-text">F 脂質</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--col-carbs)"></div><span class="legend-text">C 炭水化物</span></div>
             </div>
-            <div class="chart-wrap"><canvas id="chart-pfc"></canvas></div>
-            <div class="chart-empty" id="empty-pfc" style="display:none">データがありません</div>
+            <div class="chart-wrap"><canvas id="chart-pfc"></canvas></div><div class="chart-empty" id="empty-pfc" style="display:none">データがありません</div>
           </div>
         </div>
 
-        <!-- Condition Tab -->
         <div class="graph-panel" id="panel-condition">
-          <div class="chart-card">
-            <div class="chart-title">😴  睡眠時間 (h)</div>
-            <div class="chart-wrap"><canvas id="chart-sleep"></canvas></div>
-            <div class="chart-empty" id="empty-sleep" style="display:none">データがありません</div>
-          </div>
+          <div class="chart-card"><div class="chart-title">😴  睡眠時間 (h)</div><div class="chart-wrap"><canvas id="chart-sleep"></canvas></div><div class="chart-empty" id="empty-sleep" style="display:none">データがありません</div></div>
           <div class="chart-card">
             <div class="chart-title">⭐  満足度 / 疲労感 (1–5)</div>
-            <div class="pfc-legend">
-              <div class="pfc-legend-item"><div class="pfc-legend-dot" style="background:var(--satisfaction)"></div><span class="pfc-legend-text">満足度</span></div>
-              <div class="pfc-legend-item"><div class="pfc-legend-dot" style="background:var(--fatigue)"></div><span class="pfc-legend-text">疲労感</span></div>
+            <div class="legend-row">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--col-sat)"></div><span class="legend-text">満足度</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--col-fatigue)"></div><span class="legend-text">疲労感</span></div>
             </div>
-            <div class="chart-wrap"><canvas id="chart-condition"></canvas></div>
-            <div class="chart-empty" id="empty-condition" style="display:none">データがありません</div>
+            <div class="chart-wrap"><canvas id="chart-condition"></canvas></div><div class="chart-empty" id="empty-condition" style="display:none">データがありません</div>
           </div>
-          <div class="chart-card">
-            <div class="chart-title">👟  歩数 (歩)</div>
-            <div class="chart-wrap"><canvas id="chart-steps"></canvas></div>
-            <div class="chart-empty" id="empty-steps" style="display:none">データがありません</div>
-          </div>
+          <div class="chart-card"><div class="chart-title">👟  歩数 (歩)</div><div class="chart-wrap"><canvas id="chart-steps"></canvas></div><div class="chart-empty" id="empty-steps" style="display:none">データがありません</div></div>
         </div>
 
-        <!-- History -->
         <div class="history-card" id="history-card" style="display:none">
           <div class="history-title">📋  直近の記録</div>
           <div id="history-list"></div>
@@ -1034,248 +497,99 @@
       </div>
     </div>
 
-    <!-- ════════════════════════════════
-         SETTINGS SCREEN
-    ════════════════════════════════ -->
+    <!-- SETTINGS -->
     <div class="screen" id="screen-settings">
       <div class="screen-content">
         <div class="section-block">
           <div class="section-label">📊  累計統計</div>
-          <div class="stats-grid" id="stats-grid">
-            <div class="stats-cell" style="border-color:rgba(108,99,255,0.3)">
-              <div class="stats-cell-value" style="color:var(--accent)" id="stat-days">--</div>
-              <div class="stats-cell-unit">日</div>
-              <div class="stats-cell-label">記録日数</div>
-            </div>
-            <div class="stats-cell" style="border-color:rgba(240,98,146,0.3)">
-              <div class="stats-cell-value" style="color:var(--weight)" id="stat-weight">--</div>
-              <div class="stats-cell-unit">kg</div>
-              <div class="stats-cell-label">平均体重</div>
-            </div>
-            <div class="stats-cell" style="border-color:rgba(120,144,156,0.3)">
-              <div class="stats-cell-value" style="color:var(--fatigue)" id="stat-bodyfat">--</div>
-              <div class="stats-cell-unit">%</div>
-              <div class="stats-cell-label">平均体脂肪</div>
-            </div>
-            <div class="stats-cell" style="border-color:rgba(171,71,188,0.3)">
-              <div class="stats-cell-value" style="color:var(--sleep)" id="stat-sleep">--</div>
-              <div class="stats-cell-unit">h</div>
-              <div class="stats-cell-label">平均睡眠</div>
-            </div>
-            <div class="stats-cell" style="border-color:rgba(255,179,0,0.3)">
-              <div class="stats-cell-value" style="color:var(--satisfaction)" id="stat-satisfaction">--</div>
-              <div class="stats-cell-unit">/5</div>
-              <div class="stats-cell-label">平均満足度</div>
-            </div>
-            <div class="stats-cell" style="border-color:rgba(38,198,218,0.3)">
-              <div class="stats-cell-value" style="color:var(--exercise)" id="stat-steps">--</div>
-              <div class="stats-cell-unit">歩</div>
-              <div class="stats-cell-label">総歩数</div>
-            </div>
+          <div class="stats-grid">
+            <div class="stats-cell"><div class="stats-cell-value" style="color:var(--accent)" id="stat-days">--</div><div class="stats-cell-unit">日</div><div class="stats-cell-label">記録日数</div></div>
+            <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-weight)" id="stat-weight">--</div><div class="stats-cell-unit">kg</div><div class="stats-cell-label">平均体重</div></div>
+            <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-fat)" id="stat-bodyfat">--</div><div class="stats-cell-unit">%</div><div class="stats-cell-label">平均体脂肪</div></div>
+            <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-sleep)" id="stat-sleep">--</div><div class="stats-cell-unit">h</div><div class="stats-cell-label">平均睡眠</div></div>
+            <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-sat)" id="stat-satisfaction">--</div><div class="stats-cell-unit">/5</div><div class="stats-cell-label">平均満足度</div></div>
+            <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-steps)" id="stat-steps">--</div><div class="stats-cell-unit">歩</div><div class="stats-cell-label">総歩数</div></div>
           </div>
         </div>
-
         <div class="section-block">
           <div class="section-label">📈  体重推移</div>
           <div class="weight-range">
-            <div class="weight-range-item">
-              <div class="weight-range-label">最小</div>
-              <div class="weight-range-val" style="color:var(--success)" id="stat-wmin">-- kg</div>
-            </div>
+            <div class="weight-range-item"><div class="weight-range-label">最小</div><div class="weight-range-val" style="color:var(--success)" id="stat-wmin">-- kg</div></div>
             <div class="weight-range-sep"></div>
-            <div class="weight-range-item">
-              <div class="weight-range-label">最大</div>
-              <div class="weight-range-val" style="color:var(--danger)" id="stat-wmax">-- kg</div>
-            </div>
+            <div class="weight-range-item"><div class="weight-range-label">最大</div><div class="weight-range-val" style="color:var(--danger)" id="stat-wmax">-- kg</div></div>
             <div class="weight-range-sep"></div>
-            <div class="weight-range-item">
-              <div class="weight-range-label">平均</div>
-              <div class="weight-range-val" style="color:var(--weight)" id="stat-wavg">-- kg</div>
-            </div>
+            <div class="weight-range-item"><div class="weight-range-label">平均</div><div class="weight-range-val" style="color:var(--col-weight)" id="stat-wavg">-- kg</div></div>
           </div>
         </div>
-
         <div class="section-block">
           <div class="section-label">💾  データ管理</div>
           <div class="settings-card">
-            <div class="settings-row" onclick="exportCSV()">
-              <div class="settings-icon" style="background:rgba(108,99,255,0.15)">📤</div>
-              <div class="settings-text">
-                <div class="settings-label">CSVエクスポート</div>
-                <div class="settings-desc">全記録をCSVファイルに出力します</div>
-              </div>
-              <span class="settings-chevron">›</span>
-            </div>
-            <div class="settings-row" onclick="confirmDeleteAll()">
-              <div class="settings-icon" style="background:rgba(239,83,80,0.15)">🗑</div>
-              <div class="settings-text">
-                <div class="settings-label danger">全データを削除</div>
-                <div class="settings-desc">記録をすべて消去します（復元不可）</div>
-              </div>
-              <span class="settings-chevron">›</span>
-            </div>
+            <div class="settings-row" onclick="exportCSV()"><div class="settings-icon" style="background:rgba(37,99,235,0.1)">📤</div><div class="settings-text"><div class="settings-label">CSVエクスポート</div><div class="settings-desc">全記録をCSVファイルに出力します</div></div><span class="settings-chevron">›</span></div>
+            <div class="settings-row" onclick="confirmDeleteAll()"><div class="settings-icon" style="background:rgba(239,68,68,0.1)">🗑</div><div class="settings-text"><div class="settings-label danger">全データを削除</div><div class="settings-desc">記録をすべて消去します（復元不可）</div></div><span class="settings-chevron">›</span></div>
           </div>
         </div>
-
         <div class="section-block">
           <div class="section-label">ℹ️  アプリ情報</div>
-          <div class="settings-card">
-            <div class="info-row">
-              <span class="info-label">バージョン</span>
-              <span class="info-value">1.0.0</span>
-            </div>
-          </div>
+          <div class="settings-card"><div class="info-row"><span class="info-label">バージョン</span><span class="info-value">1.0.0</span></div></div>
         </div>
       </div>
     </div>
 
-  </div><!-- /screens -->
+  </div>
 
-  <!-- Tab Bar -->
   <nav class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('input')" id="tab-input">
-      <span class="tab-icon">📝</span>
-      <span class="tab-label">記録</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab('graph')" id="tab-graph">
-      <span class="tab-icon">📊</span>
-      <span class="tab-label">グラフ</span>
-    </button>
-    <button class="tab-btn" onclick="switchTab('settings')" id="tab-settings">
-      <span class="tab-icon">⚙️</span>
-      <span class="tab-label">設定</span>
-    </button>
+    <button class="tab-btn active" onclick="switchTab('input')" id="tab-input"><span class="tab-icon">📝</span><span class="tab-label">記録</span></button>
+    <button class="tab-btn" onclick="switchTab('graph')" id="tab-graph"><span class="tab-icon">📊</span><span class="tab-label">グラフ</span></button>
+    <button class="tab-btn" onclick="switchTab('settings')" id="tab-settings"><span class="tab-icon">⚙️</span><span class="tab-label">設定</span></button>
   </nav>
 </div>
-
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-/* ═══════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════ */
 const state = {
-  currentDate: getTodayStr(),
-  satisfaction: 3,
-  fatigue: 3,
-  currentTab: 'input',
-  graphPeriod: 30,
-  graphTab: 'body',
-  charts: {},
-  optionalOpen: false,
+  currentDate: getTodayStr(), satisfaction: 3, fatigue: 3,
+  currentTab: 'input', graphPeriod: 30, graphTab: 'body',
+  charts: {}, optionalOpen: false,
 };
 
-/* ═══════════════════════════════════════════
-   INDEXEDDB
-═══════════════════════════════════════════ */
+/* DB */
 let db;
-const DB_NAME    = 'HealthTrackerDB';
-const DB_VERSION = 1;
-const STORE      = 'records';
-
 function openDB() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    const req = indexedDB.open('HealthTrackerDB', 1);
     req.onupgradeneeded = e => {
       const d = e.target.result;
-      if (!d.objectStoreNames.contains(STORE)) {
-        d.createObjectStore(STORE, { keyPath: 'date' });
-      }
+      if (!d.objectStoreNames.contains('records'))
+        d.createObjectStore('records', { keyPath: 'date' });
     };
     req.onsuccess = e => { db = e.target.result; resolve(db); };
     req.onerror   = e => reject(e.target.error);
   });
 }
+const dbGet = date => new Promise((res,rej) => { const r = db.transaction('records','readonly').objectStore('records').get(date); r.onsuccess=e=>res(e.target.result||null); r.onerror=e=>rej(e.target.error); });
+const dbPut = rec  => new Promise((res,rej) => { const r = db.transaction('records','readwrite').objectStore('records').put(rec); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error); });
+const dbGetAll = () => new Promise((res,rej) => { const r = db.transaction('records','readonly').objectStore('records').getAll(); r.onsuccess=e=>res(e.target.result.sort((a,b)=>a.date.localeCompare(b.date))); r.onerror=e=>rej(e.target.error); });
+const dbDelete = date => new Promise((res,rej) => { const r = db.transaction('records','readwrite').objectStore('records').delete(date); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error); });
 
-function dbGet(date) {
-  return new Promise((resolve, reject) => {
-    const tx  = db.transaction(STORE, 'readonly');
-    const req = tx.objectStore(STORE).get(date);
-    req.onsuccess = e => resolve(e.target.result || null);
-    req.onerror   = e => reject(e.target.error);
-  });
-}
+/* Date utils */
+function getTodayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function formatDateJP(s) { const d=new Date(s+'T00:00:00'); return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`; }
+function getWday(s) { const d=new Date(s+'T00:00:00'); return ['日','月','火','水','木','金','土'][d.getDay()]+'曜日'; }
+function addDays(s,n) { const p=s.split('-'); const d=new Date(+p[0],+p[1]-1,+p[2]); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
-function dbPut(record) {
-  return new Promise((resolve, reject) => {
-    const tx  = db.transaction(STORE, 'readwrite');
-    const req = tx.objectStore(STORE).put(record);
-    req.onsuccess = e => resolve(e.target.result);
-    req.onerror   = e => reject(e.target.error);
-  });
-}
-
-function dbGetAll() {
-  return new Promise((resolve, reject) => {
-    const tx  = db.transaction(STORE, 'readonly');
-    const req = tx.objectStore(STORE).getAll();
-    req.onsuccess = e => resolve(e.target.result.sort((a,b) => a.date.localeCompare(b.date)));
-    req.onerror   = e => reject(e.target.error);
-  });
-}
-
-function dbDelete(date) {
-  return new Promise((resolve, reject) => {
-    const tx  = db.transaction(STORE, 'readwrite');
-    const req = tx.objectStore(STORE).delete(date);
-    req.onsuccess = () => resolve();
-    req.onerror   = e => reject(e.target.error);
-  });
-}
-
-/* ═══════════════════════════════════════════
-   DATE UTILS
-═══════════════════════════════════════════ */
-function getTodayStr() {
-  const d  = new Date();
-  const yy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const dd = String(d.getDate()).padStart(2,'0');
-  return `${yy}-${mm}-${dd}`;
-}
-
-function formatDateJP(str) {
-  const d = new Date(str + 'T00:00:00');
-  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
-}
-
-function getWday(str) {
-  const d = new Date(str + 'T00:00:00');
-  return ['日','月','火','水','木','金','土'][d.getDay()] + '曜日';
-}
-
-function addDays(str, n) {
-  const parts = str.split('-');
-  const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  d.setDate(d.getDate() + n);
-  const yy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const dd = String(d.getDate()).padStart(2,'0');
-  return `${yy}-${mm}-${dd}`;
-}
-
-/* ═══════════════════════════════════════════
-   DATE NAVIGATOR
-═══════════════════════════════════════════ */
-function updateDateNav(hasSavedData) {
-  const today  = getTodayStr();
-  const isToday = state.currentDate === today;
-
+/* Date nav */
+function updateDateNav(hasSaved) {
+  const isToday = state.currentDate===getTodayStr();
   document.getElementById('date-display').textContent = formatDateJP(state.currentDate);
   document.getElementById('date-wday').textContent    = getWday(state.currentDate);
   document.getElementById('header-date').textContent  = state.currentDate;
-  document.getElementById('badge-today').style.display = isToday ? 'inline-block' : 'none';
-  document.getElementById('badge-saved').style.display = hasSavedData ? 'inline-block' : 'none';
+  document.getElementById('badge-today').style.display = isToday?'inline-block':'none';
+  document.getElementById('badge-saved').style.display = hasSaved?'inline-block':'none';
   document.getElementById('date-next').disabled = isToday;
-
-  const saveBtn = document.getElementById('save-btn');
-  saveBtn.textContent = hasSavedData ? '上書き保存する' : '保存する';
+  document.getElementById('save-btn').textContent = hasSaved?'上書き保存する':'保存する';
 }
-
 document.getElementById('date-prev').onclick = () => navigateDate(-1);
 document.getElementById('date-next').onclick = () => navigateDate(1);
-
 async function navigateDate(delta) {
   const next = addDays(state.currentDate, delta);
   if (next > getTodayStr()) return;
@@ -1283,394 +597,222 @@ async function navigateDate(delta) {
   await loadInputForm();
 }
 
-/* ═══════════════════════════════════════════
-   INPUT FORM
-═══════════════════════════════════════════ */
-const FIELDS = ['weight','bodyFat','muscleMass','bmr','calorieIntake','protein','fat','carbs',
-                'exerciseCalories','steps','bedTime','wakeTime','memo','waist','exerciseDuration','water'];
-
-function calcSleep(bed, wake) {
-  if (!bed || !wake) return null;
-  const [bh, bm] = bed.split(':').map(Number);
-  const [wh, wm] = wake.split(':').map(Number);
-  let mins = (wh * 60 + wm) - (bh * 60 + bm);
-  if (mins <= 0) mins += 24 * 60; // 日をまたぐ場合
-  return Math.round(mins / 60 * 10) / 10;
+/* Sleep calc */
+function calcSleep() {
+  const bh=parseInt(document.getElementById('bedH').value);
+  const bm=parseInt(document.getElementById('bedM').value)||0;
+  const wh=parseInt(document.getElementById('wakeH').value);
+  const wm=parseInt(document.getElementById('wakeM').value)||0;
+  if (isNaN(bh)||isNaN(wh)) { document.getElementById('sleepCalc').textContent='--'; return null; }
+  let mins=(wh*60+wm)-(bh*60+bm);
+  if (mins<=0) mins+=24*60;
+  const h=Math.round(mins/60*10)/10;
+  document.getElementById('sleepCalc').textContent=h;
+  return h;
 }
+['bedH','bedM','wakeH','wakeM'].forEach(id => document.getElementById(id).addEventListener('input', calcSleep));
 
-function updateSleepCalc() {
-  const bed  = document.getElementById('bedTime').value;
-  const wake = document.getElementById('wakeTime').value;
-  const h    = calcSleep(bed, wake);
-  document.getElementById('sleepCalc').textContent = h != null ? h : '--';
-}
-
-document.getElementById('bedTime').addEventListener('change', updateSleepCalc);
-document.getElementById('wakeTime').addEventListener('change', updateSleepCalc);
+/* Form */
+const NUM_FIELDS = ['weight','bodyFat','muscleMass','bmr','calorieIntake','protein','fat','carbs','exerciseCalories','steps','waist','exerciseDuration','water'];
+const INT_FIELDS = new Set(['bmr','calorieIntake','exerciseCalories','steps','water']);
 
 function clearForm() {
-  FIELDS.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('sleepCalc').textContent = '--';
-  state.satisfaction = 3;
-  state.fatigue      = 3;
-  setRating('satisfaction', 3);
-  setRating('fatigue', 3);
+  [...NUM_FIELDS,'bedH','bedM','wakeH','wakeM','memo'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('sleepCalc').textContent='--';
+  state.satisfaction=3; state.fatigue=3;
+  setRating('satisfaction',3); setRating('fatigue',3);
 }
 
 async function loadInputForm() {
   clearForm();
   const record = await dbGet(state.currentDate);
   if (record) {
-    FIELDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (el && record[id] != null) el.value = record[id];
-    });
-    updateSleepCalc();
-    setRating('satisfaction', record.satisfaction || 3);
-    setRating('fatigue',      record.fatigue      || 3);
-    if (record.waist || record.exerciseDuration || record.water) {
-      if (!state.optionalOpen) toggleOptional();
-    }
+    NUM_FIELDS.forEach(id => { const el=document.getElementById(id); if(el&&record[id]!=null) el.value=record[id]; });
+    ['bedH','bedM','wakeH','wakeM'].forEach(id => { if(record[id]!=null) document.getElementById(id).value=record[id]; });
+    calcSleep();
+    if (record.memo) document.getElementById('memo').value=record.memo;
+    setRating('satisfaction', record.satisfaction||3);
+    setRating('fatigue',      record.fatigue||3);
+    if (record.waist||record.exerciseDuration||record.water) { if(!state.optionalOpen) toggleOptional(); }
   }
   updateDateNav(!!record);
 }
 
 async function saveRecord() {
   const record = { date: state.currentDate };
-  FIELDS.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const v = el.value.trim();
-    if (id === 'memo' || id === 'bedTime' || id === 'wakeTime') {
-      record[id] = v || null;
-    } else {
-      record[id] = v !== '' ? (
-        id === 'calorieIntake' || id === 'exerciseCalories' || id === 'steps' || id === 'water' || id === 'bmr'
-          ? parseInt(v) : parseFloat(v)
-      ) : null;
-    }
+  NUM_FIELDS.forEach(id => {
+    const el=document.getElementById(id); if(!el) return;
+    const v=el.value.trim();
+    record[id] = v!=='' ? (INT_FIELDS.has(id)?parseInt(v):parseFloat(v)) : null;
   });
-  // 睡眠時間を自動計算して保存
-  record.sleepHours   = calcSleep(record.bedTime, record.wakeTime);
+  ['bedH','bedM','wakeH','wakeM'].forEach(id => {
+    const v=document.getElementById(id).value.trim();
+    record[id] = v!=='' ? parseInt(v) : null;
+  });
+  record.sleepHours   = calcSleep();
+  record.memo         = document.getElementById('memo').value.trim()||null;
   record.satisfaction = state.satisfaction;
   record.fatigue      = state.fatigue;
   record.updatedAt    = new Date().toISOString();
-
   await dbPut(record);
   updateDateNav(true);
   showToast('✅ 保存しました');
 }
 
-/* ═══════════════════════════════════════════
-   RATING
-═══════════════════════════════════════════ */
-const RATING_COLORS = { satisfaction: 'var(--satisfaction)', fatigue: 'var(--fatigue)' };
-
+/* Rating */
+const RATING_COLORS = { satisfaction:'var(--col-sat)', fatigue:'var(--col-fatigue)' };
 function setRating(type, val) {
-  state[type] = val;
-  const color = RATING_COLORS[type];
+  state[type]=val;
+  const color=RATING_COLORS[type];
   document.querySelectorAll(`#rating-${type} .rating-btn`).forEach(btn => {
-    const isActive = parseInt(btn.dataset.val) === val;
-    btn.classList.toggle('active', isActive);
-    btn.style.background    = isActive ? color : '';
-    btn.style.borderColor   = isActive ? color : '';
-    btn.querySelector('.rating-num').style.color = isActive ? '#fff' : '';
-    btn.querySelector('.rating-sub').style.color = isActive ? 'rgba(255,255,255,0.7)' : '';
+    const active=parseInt(btn.dataset.val)===val;
+    btn.classList.toggle('active',active);
+    btn.style.background=active?color:''; btn.style.borderColor=active?color:'';
+    btn.querySelector('.rating-num').style.color=active?'#fff':'';
+    btn.querySelector('.rating-sub').style.color=active?'rgba(255,255,255,0.85)':'';
   });
 }
 
-/* ═══════════════════════════════════════════
-   OPTIONAL PANEL
-═══════════════════════════════════════════ */
+/* Optional */
 function toggleOptional() {
-  state.optionalOpen = !state.optionalOpen;
-  const panel = document.getElementById('optional-panel');
-  const arrow = document.getElementById('toggle-arrow');
-  panel.classList.toggle('open', state.optionalOpen);
-  arrow.classList.toggle('open', state.optionalOpen);
+  state.optionalOpen=!state.optionalOpen;
+  document.getElementById('optional-panel').classList.toggle('open',state.optionalOpen);
+  document.getElementById('toggle-arrow').textContent=state.optionalOpen?'▲':'▼';
 }
 
-/* ═══════════════════════════════════════════
-   TAB NAVIGATION
-═══════════════════════════════════════════ */
+/* Tabs */
 function switchTab(tab) {
   ['input','graph','settings'].forEach(t => {
-    document.getElementById(`screen-${t}`).classList.toggle('active', t === tab);
-    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    document.getElementById(`screen-${t}`).classList.toggle('active',t===tab);
+    document.getElementById(`tab-${t}`).classList.toggle('active',t===tab);
   });
-  state.currentTab = tab;
-  if (tab === 'graph')    renderGraphs();
-  if (tab === 'settings') renderStats();
+  state.currentTab=tab;
+  if(tab==='graph') renderGraphs();
+  if(tab==='settings') renderStats();
 }
 
-/* ═══════════════════════════════════════════
-   GRAPHS
-═══════════════════════════════════════════ */
+/* Charts */
 const CHART_OPTS = {
-  responsive: true,
-  maintainAspectRatio: true,
-  animation: { duration: 400 },
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      backgroundColor: '#1a1a28',
-      borderColor: '#2a2a40',
-      borderWidth: 1,
-      titleColor: '#ededf8',
-      bodyColor: '#7878a0',
-      padding: 10,
-    }
+  responsive:true, maintainAspectRatio:true, animation:{duration:300},
+  plugins:{
+    legend:{display:false},
+    tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f8fafc',bodyColor:'#94a3b8',padding:10}
   },
-  scales: {
-    x: {
-      grid: { color: '#2a2a40', drawBorder: false },
-      ticks: { color: '#3d3d58', font: { family: "'DM Mono'", size: 10 }, maxRotation: 0 }
-    },
-    y: {
-      grid: { color: '#2a2a40', drawBorder: false },
-      ticks: { color: '#3d3d58', font: { family: "'DM Mono'", size: 10 } }
-    }
+  scales:{
+    x:{grid:{color:'#f1f5f9',drawBorder:false},ticks:{color:'#94a3b8',font:{family:"'DM Mono'",size:10},maxRotation:0}},
+    y:{grid:{color:'#f1f5f9',drawBorder:false},ticks:{color:'#94a3b8',font:{family:"'DM Mono'",size:10}}}
   }
 };
-
-function makeLineDataset(data, color, label='') {
-  return {
-    label,
-    data,
-    borderColor: color,
-    backgroundColor: color + '22',
-    borderWidth: 2,
-    pointRadius: 4,
-    pointBackgroundColor: color,
-    pointBorderColor: '#0d0d14',
-    pointBorderWidth: 2,
-    tension: 0.3,
-    fill: true,
-  };
+function mkDS(data,color,label='') {
+  return { label,data,borderColor:color,backgroundColor:color+'18',borderWidth:2.5,
+    pointRadius:4,pointBackgroundColor:color,pointBorderColor:'#fff',pointBorderWidth:2,tension:0.3,fill:true };
 }
-
-function thinLabels(labels, max=8) {
-  if (labels.length <= max) return labels;
-  const step = Math.ceil(labels.length / max);
-  return labels.map((l,i) => i % step === 0 ? l : '');
+function thinLabels(labels,max=8) {
+  if(labels.length<=max) return labels;
+  const step=Math.ceil(labels.length/max);
+  return labels.map((l,i)=>i%step===0?l:'');
 }
-
-function renderChart(canvasId, emptyId, labels, datasets, extraOpts={}) {
-  const canvas = document.getElementById(canvasId);
-  const empty  = document.getElementById(emptyId);
-  const hasData = datasets.some(d => d.data.some(v => v != null));
-
-  if (!hasData) {
-    canvas.style.display = 'none';
-    empty.style.display  = 'flex';
-    return;
-  }
-  canvas.style.display = 'block';
-  empty.style.display  = 'none';
-
-  if (state.charts[canvasId]) {
-    state.charts[canvasId].destroy();
-  }
-  state.charts[canvasId] = new Chart(canvas, {
-    type: 'line',
-    data: { labels: thinLabels(labels), datasets },
-    options: { ...CHART_OPTS, ...extraOpts },
-  });
+function renderChart(cid,eid,labels,datasets,extra={}) {
+  const canvas=document.getElementById(cid), empty=document.getElementById(eid);
+  const hasData=datasets.some(d=>d.data.some(v=>v!=null));
+  if(!hasData){canvas.style.display='none';empty.style.display='flex';return;}
+  canvas.style.display='block';empty.style.display='none';
+  if(state.charts[cid]) state.charts[cid].destroy();
+  state.charts[cid]=new Chart(canvas,{type:'line',data:{labels:thinLabels(labels),datasets},options:{...CHART_OPTS,...extra}});
 }
-
 async function renderGraphs() {
-  const all = await dbGetAll();
-  const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - state.graphPeriod);
-  const records = all.filter(r => new Date(r.date) >= cutoff);
-
-  // Summary
-  const banner = document.getElementById('summary-banner');
-  const noData = document.getElementById('no-graph-data');
-  if (records.length === 0) {
-    banner.style.display = 'none';
-    noData.style.display = 'flex';
-  } else {
-    noData.style.display = 'none';
-    banner.style.display = 'flex';
-    const latest = records[records.length - 1];
-    const oldest = records[0];
-    document.getElementById('sum-weight').textContent =
-      latest.weight != null ? `${latest.weight} kg` : '--';
-    document.getElementById('sum-days').textContent = records.length + ' 日';
-    if (latest.weight != null && oldest.weight != null && records.length > 1) {
-      const diff = (latest.weight - oldest.weight).toFixed(1);
-      const el   = document.getElementById('sum-diff');
-      el.textContent = (parseFloat(diff) > 0 ? '+' : '') + diff + ' kg';
-      el.style.color = parseFloat(diff) <= 0 ? 'var(--success)' : 'var(--danger)';
-    } else {
-      document.getElementById('sum-diff').textContent = '--';
-    }
+  const all=await dbGetAll();
+  const cutoff=new Date(); cutoff.setDate(cutoff.getDate()-state.graphPeriod);
+  const records=all.filter(r=>new Date(r.date+'T00:00:00')>=cutoff);
+  const banner=document.getElementById('summary-banner'), noData=document.getElementById('no-graph-data');
+  if(!records.length){banner.style.display='none';noData.style.display='flex';}
+  else {
+    noData.style.display='none';banner.style.display='flex';
+    const latest=records[records.length-1],oldest=records[0];
+    document.getElementById('sum-weight').textContent=latest.weight!=null?`${latest.weight} kg`:'--';
+    document.getElementById('sum-days').textContent=records.length+' 日';
+    if(latest.weight!=null&&oldest.weight!=null&&records.length>1){
+      const diff=(latest.weight-oldest.weight).toFixed(1);
+      const el=document.getElementById('sum-diff');
+      el.textContent=(parseFloat(diff)>0?'+':'')+diff+' kg';
+      el.style.color=parseFloat(diff)<=0?'var(--success)':'var(--danger)';
+    } else document.getElementById('sum-diff').textContent='--';
   }
-
-  const labels = records.map(r => r.date.slice(5).replace('-','/'));
-
-  // ─── Body ───
-  renderChart('chart-weight',  'empty-weight',  labels,
-    [makeLineDataset(records.map(r => r.weight),    'var(--weight)')]);
-  renderChart('chart-bodyfat', 'empty-bodyfat', labels,
-    [makeLineDataset(records.map(r => r.bodyFat),   'var(--fatigue)')]);
-  renderChart('chart-muscle',  'empty-muscle',  labels,
-    [makeLineDataset(records.map(r => r.muscleMass),'var(--exercise)')]);
-
-  // ─── Nutrition ───
-  renderChart('chart-calorie', 'empty-calorie', labels,
-    [makeLineDataset(records.map(r => r.calorieIntake),    'var(--protein)')]);
-  renderChart('chart-exercise','empty-exercise', labels,
-    [makeLineDataset(records.map(r => r.exerciseCalories), 'var(--exercise)')]);
-  renderChart('chart-pfc',     'empty-pfc',     labels, [
-    makeLineDataset(records.map(r => r.protein), 'var(--protein)', 'P'),
-    makeLineDataset(records.map(r => r.fat),     'var(--fat)',     'F'),
-    makeLineDataset(records.map(r => r.carbs),   'var(--carbs)',   'C'),
-  ]);
-
-  // ─── Condition ───
-  renderChart('chart-sleep',    'empty-sleep',    labels,
-    [makeLineDataset(records.map(r => r.sleepHours),   'var(--sleep)')],
-    { scales: { ...CHART_OPTS.scales, y: { ...CHART_OPTS.scales.y, min: 0 } } });
-  renderChart('chart-condition','empty-condition', labels, [
-    makeLineDataset(records.map(r => r.satisfaction), 'var(--satisfaction)', '満足度'),
-    makeLineDataset(records.map(r => r.fatigue),      'var(--fatigue)',      '疲労感'),
-  ], { scales: { ...CHART_OPTS.scales, y: { ...CHART_OPTS.scales.y, min:0, max:5 } } });
-  renderChart('chart-steps',    'empty-steps',    labels,
-    [makeLineDataset(records.map(r => r.steps),        'var(--exercise)')],
-    { scales: { ...CHART_OPTS.scales, y: { ...CHART_OPTS.scales.y, min: 0 } } });
-
-  // ─── History ───
-  const histCard = document.getElementById('history-card');
-  const histList = document.getElementById('history-list');
-  if (records.length > 0) {
-    histCard.style.display = 'block';
-    histList.innerHTML = [...records].reverse().slice(0,10).map(r => `
-      <div class="history-row">
-        <span class="history-date">${r.date.slice(5).replace('-','/')}</span>
-        <span class="history-val" style="color:var(--weight)">${r.weight != null ? r.weight+'kg' : '--'}</span>
-        <span class="history-val" style="color:var(--protein)">${r.calorieIntake != null ? r.calorieIntake+'kcal' : '--'}</span>
-        <span class="history-val" style="color:var(--sleep)">${r.sleepHours != null ? r.sleepHours+'h' : '--'}</span>
-        <span class="history-stars" style="color:var(--satisfaction)">${'★'.repeat(r.satisfaction||0)}</span>
-      </div>`).join('');
-  } else {
-    histCard.style.display = 'none';
-  }
+  const labels=records.map(r=>r.date.slice(5).replace('-','/'));
+  const yExtra=(mn,mx)=>({scales:{...CHART_OPTS.scales,y:{...CHART_OPTS.scales.y,min:mn,max:mx}}});
+  renderChart('chart-weight','empty-weight',labels,[mkDS(records.map(r=>r.weight),'var(--col-weight)')]);
+  renderChart('chart-bodyfat','empty-bodyfat',labels,[mkDS(records.map(r=>r.bodyFat),'var(--col-fat)')]);
+  renderChart('chart-muscle','empty-muscle',labels,[mkDS(records.map(r=>r.muscleMass),'var(--col-muscle)')]);
+  renderChart('chart-calorie','empty-calorie',labels,[mkDS(records.map(r=>r.calorieIntake),'var(--col-calorie)')]);
+  renderChart('chart-exercise','empty-exercise',labels,[mkDS(records.map(r=>r.exerciseCalories),'var(--col-exercise)')]);
+  renderChart('chart-pfc','empty-pfc',labels,[mkDS(records.map(r=>r.protein),'var(--col-protein)','P'),mkDS(records.map(r=>r.fat),'var(--col-fat)','F'),mkDS(records.map(r=>r.carbs),'var(--col-carbs)','C')]);
+  renderChart('chart-sleep','empty-sleep',labels,[mkDS(records.map(r=>r.sleepHours),'var(--col-sleep)')],yExtra(0,undefined));
+  renderChart('chart-condition','empty-condition',labels,[mkDS(records.map(r=>r.satisfaction),'var(--col-sat)','満足度'),mkDS(records.map(r=>r.fatigue),'var(--col-fatigue)','疲労感')],yExtra(0,5));
+  renderChart('chart-steps','empty-steps',labels,[mkDS(records.map(r=>r.steps),'var(--col-steps)')],yExtra(0,undefined));
+  const histCard=document.getElementById('history-card'),histList=document.getElementById('history-list');
+  if(records.length){
+    histCard.style.display='block';
+    histList.innerHTML=[...records].reverse().slice(0,10).map(r=>`<div class="history-row"><span class="history-date">${r.date.slice(5).replace('-','/')}</span><span class="history-val" style="color:var(--col-weight)">${r.weight!=null?r.weight+'kg':'--'}</span><span class="history-val" style="color:var(--col-calorie)">${r.calorieIntake!=null?r.calorieIntake+'kcal':'--'}</span><span class="history-val" style="color:var(--col-sleep)">${r.sleepHours!=null?r.sleepHours+'h':'--'}</span><span class="history-stars" style="color:var(--col-sat)">${'★'.repeat(r.satisfaction||0)}</span></div>`).join('');
+  } else histCard.style.display='none';
 }
-
 function setPeriod(days) {
-  state.graphPeriod = days;
-  document.querySelectorAll('.period-btn').forEach(b => {
-    b.classList.toggle('active', parseInt(b.dataset.days) === days);
-  });
+  state.graphPeriod=days;
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.days)===days));
   renderGraphs();
 }
-
 function setGraphTab(tab) {
-  state.graphTab = tab;
-  document.querySelectorAll('.graph-tab').forEach((b,i) => {
-    const tabs = ['body','nutrition','condition'];
-    b.classList.toggle('active', tabs[i] === tab);
-  });
-  document.querySelectorAll('.graph-panel').forEach(p => {
-    p.classList.toggle('active', p.id === `panel-${tab}`);
-  });
+  state.graphTab=tab;
+  document.querySelectorAll('.graph-tab').forEach((b,i)=>b.classList.toggle('active',['body','nutrition','condition'][i]===tab));
+  document.querySelectorAll('.graph-panel').forEach(p=>p.classList.toggle('active',p.id===`panel-${tab}`));
 }
 
-/* ═══════════════════════════════════════════
-   STATS
-═══════════════════════════════════════════ */
+/* Stats */
 async function renderStats() {
-  const records = await dbGetAll();
-  const n = records.length;
-  document.getElementById('stat-days').textContent = n || '--';
-
-  if (n === 0) return;
-
-  const avg = (key) => {
-    const vals = records.map(r => r[key]).filter(v => v != null);
-    if (!vals.length) return null;
-    return (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1);
-  };
-  const weights = records.map(r => r.weight).filter(v => v != null);
-  const totalSteps = records.reduce((a,r) => a + (r.steps||0), 0);
-
-  document.getElementById('stat-weight').textContent       = avg('weight')       || '--';
-  document.getElementById('stat-bodyfat').textContent      = avg('bodyFat')      || '--';
-  document.getElementById('stat-sleep').textContent        = avg('sleepHours')   || '--';
-  document.getElementById('stat-satisfaction').textContent = avg('satisfaction') || '--';
-  document.getElementById('stat-steps').textContent        = totalSteps > 0 ? totalSteps.toLocaleString() : '--';
-
-  if (weights.length > 0) {
-    document.getElementById('stat-wmin').textContent = Math.min(...weights).toFixed(1) + ' kg';
-    document.getElementById('stat-wmax').textContent = Math.max(...weights).toFixed(1) + ' kg';
-    document.getElementById('stat-wavg').textContent = (weights.reduce((a,b)=>a+b,0)/weights.length).toFixed(1) + ' kg';
+  const records=await dbGetAll(); const n=records.length;
+  document.getElementById('stat-days').textContent=n||'--';
+  if(!n) return;
+  const avg=key=>{const v=records.map(r=>r[key]).filter(v=>v!=null);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1):null;};
+  const weights=records.map(r=>r.weight).filter(v=>v!=null);
+  const totalSteps=records.reduce((a,r)=>a+(r.steps||0),0);
+  document.getElementById('stat-weight').textContent       = avg('weight')||'--';
+  document.getElementById('stat-bodyfat').textContent      = avg('bodyFat')||'--';
+  document.getElementById('stat-sleep').textContent        = avg('sleepHours')||'--';
+  document.getElementById('stat-satisfaction').textContent = avg('satisfaction')||'--';
+  document.getElementById('stat-steps').textContent        = totalSteps>0?totalSteps.toLocaleString():'--';
+  if(weights.length){
+    document.getElementById('stat-wmin').textContent=Math.min(...weights).toFixed(1)+' kg';
+    document.getElementById('stat-wmax').textContent=Math.max(...weights).toFixed(1)+' kg';
+    document.getElementById('stat-wavg').textContent=(weights.reduce((a,b)=>a+b,0)/weights.length).toFixed(1)+' kg';
   }
 }
 
-/* ═══════════════════════════════════════════
-   CSV EXPORT
-═══════════════════════════════════════════ */
+/* CSV */
 async function exportCSV() {
-  const records = await dbGetAll();
-  if (records.length === 0) { showToast('データがありません'); return; }
-
-  const headers = ['日付','体重(kg)','体脂肪率(%)','筋肉量(kg)','基礎代謝(kcal)',
-    '摂取カロリー(kcal)','タンパク質(g)','脂質(g)','炭水化物(g)',
-    '運動消費カロリー(kcal)','歩数','入眠時刻','起床時刻','睡眠時間(h)',
-    '満足度(1-5)','疲労感(1-5)','メモ',
-    '腹囲(cm)','運動時間(h)','水分摂取量(ml)'];
-  const rows = records.map(r => [
-    r.date, r.weight??'', r.bodyFat??'', r.muscleMass??'', r.bmr??'',
-    r.calorieIntake??'', r.protein??'', r.fat??'', r.carbs??'',
-    r.exerciseCalories??'', r.steps??'', r.bedTime??'', r.wakeTime??'', r.sleepHours??'',
-    r.satisfaction??'', r.fatigue??'',
-    (r.memo||'').replace(/,/g,'，').replace(/\n/g,' '),
-    r.waist??'', r.exerciseDuration??'', r.water??'',
-  ]);
-  const csv  = [headers, ...rows].map(r => r.join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `health_data_${getTodayStr()}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('📤 CSVを書き出しました');
+  const records=await dbGetAll();
+  if(!records.length){showToast('データがありません');return;}
+  const headers=['日付','体重(kg)','体脂肪率(%)','筋肉量(kg)','基礎代謝(kcal)','摂取カロリー(kcal)','タンパク質(g)','脂質(g)','炭水化物(g)','運動消費カロリー(kcal)','歩数','入眠(時)','入眠(分)','起床(時)','起床(分)','睡眠時間(h)','満足度(1-5)','疲労感(1-5)','メモ','腹囲(cm)','運動時間(h)','水分摂取量(ml)'];
+  const rows=records.map(r=>[r.date,r.weight??'',r.bodyFat??'',r.muscleMass??'',r.bmr??'',r.calorieIntake??'',r.protein??'',r.fat??'',r.carbs??'',r.exerciseCalories??'',r.steps??'',r.bedH??'',r.bedM??'',r.wakeH??'',r.wakeM??'',r.sleepHours??'',r.satisfaction??'',r.fatigue??'',(r.memo||'').replace(/,/g,'，').replace(/\n/g,' '),r.waist??'',r.exerciseDuration??'',r.water??'']);
+  const csv=[headers,...rows].map(r=>r.join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`health_data_${getTodayStr()}.csv`; a.click();
+  URL.revokeObjectURL(url); showToast('📤 CSVを書き出しました');
 }
-
 async function confirmDeleteAll() {
-  if (!confirm('全データを削除します。この操作は元に戻せません。本当に削除しますか？')) return;
-  const records = await dbGetAll();
-  for (const r of records) await dbDelete(r.date);
-  renderStats();
-  showToast('🗑 全データを削除しました');
+  if(!confirm('全データを削除します。本当に削除しますか？')) return;
+  const records=await dbGetAll();
+  for(const r of records) await dbDelete(r.date);
+  renderStats(); showToast('🗑 全データを削除しました');
 }
 
-/* ═══════════════════════════════════════════
-   TOAST
-═══════════════════════════════════════════ */
+/* Toast */
 let toastTimer;
 function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
 }
 
-/* ═══════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════ */
-async function init() {
-  await openDB();
-  await loadInputForm();
-}
-
+async function init() { await openDB(); await loadInputForm(); }
 init();
 </script>
 </body>
