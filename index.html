@@ -525,6 +525,7 @@
           <div class="section-label">💾  データ管理</div>
           <div class="settings-card">
             <div class="settings-row" onclick="exportCSV()"><div class="settings-icon" style="background:rgba(37,99,235,0.1)">📤</div><div class="settings-text"><div class="settings-label">CSVエクスポート</div><div class="settings-desc">全記録をCSVファイルに出力します</div></div><span class="settings-chevron">›</span></div>
+            <div class="settings-row" onclick="document.getElementById('csv-file-input').click()"><div class="settings-icon" style="background:rgba(16,185,129,0.1)">📥</div><div class="settings-text"><div class="settings-label">CSVインポート</div><div class="settings-desc">バックアップCSVからデータを復元します</div></div><span class="settings-chevron">›</span></div>
             <div class="settings-row" onclick="confirmDeleteAll()"><div class="settings-icon" style="background:rgba(239,68,68,0.1)">🗑</div><div class="settings-text"><div class="settings-label danger">全データを削除</div><div class="settings-desc">記録をすべて消去します（復元不可）</div></div><span class="settings-chevron">›</span></div>
           </div>
         </div>
@@ -532,6 +533,8 @@
           <div class="section-label">ℹ️  アプリ情報</div>
           <div class="settings-card"><div class="info-row"><span class="info-label">バージョン</span><span class="info-value">1.0.0</span></div></div>
         </div>
+        <!-- 非表示ファイル選択 -->
+        <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="importCSV(event)">
       </div>
     </div>
 
@@ -803,6 +806,106 @@ async function confirmDeleteAll() {
   const records=await dbGetAll();
   for(const r of records) await dbDelete(r.date);
   renderStats(); showToast('🗑 全データを削除しました');
+}
+
+/* CSV Import */
+async function importCSV(event) {
+  const file = event.target.files[0];
+  // inputをリセット（同じファイルを再選択できるよう）
+  event.target.value = '';
+  if (!file) return;
+
+  const text = await file.text();
+
+  // BOM除去・行分割
+  const clean = text.replace(/^\uFEFF/, '');
+  const lines  = clean.split(/\r?\n/).filter(l => l.trim() !== '');
+  if (lines.length < 2) { alert('データが見つかりませんでした。'); return; }
+
+  // ヘッダー行を解析してインデックスを特定
+  const headers = lines[0].split(',');
+  const idx = name => headers.indexOf(name);
+
+  // 列インデックスマップ（エクスポート時のヘッダー名に対応）
+  const COL = {
+    date:              idx('日付'),
+    weight:            idx('体重(kg)'),
+    bodyFat:           idx('体脂肪率(%)'),
+    muscleMass:        idx('筋肉量(kg)'),
+    bmr:               idx('基礎代謝(kcal)'),
+    calorieIntake:     idx('摂取カロリー(kcal)'),
+    protein:           idx('タンパク質(g)'),
+    fat:               idx('脂質(g)'),
+    carbs:             idx('炭水化物(g)'),
+    exerciseCalories:  idx('運動消費カロリー(kcal)'),
+    steps:             idx('歩数'),
+    bedH:              idx('入眠(時)'),
+    bedM:              idx('入眠(分)'),
+    wakeH:             idx('起床(時)'),
+    wakeM:             idx('起床(分)'),
+    sleepHours:        idx('睡眠時間(h)'),
+    satisfaction:      idx('満足度(1-5)'),
+    fatigue:           idx('疲労感(1-5)'),
+    memo:              idx('メモ'),
+    waist:             idx('腹囲(cm)'),
+    exerciseDuration:  idx('運動時間(h)'),
+    water:             idx('水分摂取量(ml)'),
+  };
+
+  if (COL.date === -1) {
+    alert('CSVのフォーマットが正しくありません。\nこのアプリでエクスポートしたCSVファイルを使用してください。');
+    return;
+  }
+
+  const toFloat = v => (v===''||v==null) ? null : parseFloat(v);
+  const toInt   = v => (v===''||v==null) ? null : parseInt(v);
+  const toStr   = v => (v===''||v==null) ? null : v.replace(/，/g, ',');
+
+  let imported = 0, skipped = 0;
+  const dataLines = lines.slice(1);
+
+  for (const line of dataLines) {
+    // カンマ区切りパース（メモ内の「，」は事前に変換済み）
+    const cols = line.split(',');
+    const date = cols[COL.date]?.trim();
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) { skipped++; continue; }
+
+    const record = {
+      date,
+      weight:           toFloat(cols[COL.weight]),
+      bodyFat:          toFloat(cols[COL.bodyFat]),
+      muscleMass:       toFloat(cols[COL.muscleMass]),
+      bmr:              toInt(cols[COL.bmr]),
+      calorieIntake:    toInt(cols[COL.calorieIntake]),
+      protein:          toFloat(cols[COL.protein]),
+      fat:              toFloat(cols[COL.fat]),
+      carbs:            toFloat(cols[COL.carbs]),
+      exerciseCalories: toInt(cols[COL.exerciseCalories]),
+      steps:            toInt(cols[COL.steps]),
+      bedH:             toInt(cols[COL.bedH]),
+      bedM:             toInt(cols[COL.bedM]),
+      wakeH:            toInt(cols[COL.wakeH]),
+      wakeM:            toInt(cols[COL.wakeM]),
+      sleepHours:       toFloat(cols[COL.sleepHours]),
+      satisfaction:     toInt(cols[COL.satisfaction]),
+      fatigue:          toInt(cols[COL.fatigue]),
+      memo:             toStr(cols[COL.memo]),
+      waist:            toFloat(cols[COL.waist]),
+      exerciseDuration: toFloat(cols[COL.exerciseDuration]),
+      water:            toInt(cols[COL.water]),
+      updatedAt:        new Date().toISOString(),
+    };
+
+    await dbPut(record);
+    imported++;
+  }
+
+  await renderStats();
+  const msg = skipped > 0
+    ? `📥 ${imported}件をインポートしました（${skipped}件スキップ）`
+    : `📥 ${imported}件をインポートしました`;
+  alert(msg);
+  showToast(`📥 ${imported}件インポート完了`);
 }
 
 /* Toast */
