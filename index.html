@@ -221,8 +221,8 @@
     }
 
     /* Row layout */
-    .row { display: flex; gap: 10px; }
-    .row .field { flex: 1; }
+    .row { display: flex; flex-direction: column; gap: 0; }
+    .row .field { width: 100%; }
 
     /* PFC Fields */
     .pfc-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
@@ -997,6 +997,11 @@
             <div class="chart-wrap"><canvas id="chart-condition"></canvas></div>
             <div class="chart-empty" id="empty-condition" style="display:none">データがありません</div>
           </div>
+          <div class="chart-card">
+            <div class="chart-title">👟  歩数 (歩)</div>
+            <div class="chart-wrap"><canvas id="chart-steps"></canvas></div>
+            <div class="chart-empty" id="empty-steps" style="display:none">データがありません</div>
+          </div>
         </div>
 
         <!-- History -->
@@ -1488,6 +1493,9 @@ async function renderGraphs() {
     makeLineDataset(records.map(r => r.satisfaction), 'var(--satisfaction)', '満足度'),
     makeLineDataset(records.map(r => r.fatigue),      'var(--fatigue)',      '疲労感'),
   ], { scales: { ...CHART_OPTS.scales, y: { ...CHART_OPTS.scales.y, min:0, max:5 } } });
+  renderChart('chart-steps',    'empty-steps',    labels,
+    [makeLineDataset(records.map(r => r.steps),        'var(--exercise)')],
+    { scales: { ...CHART_OPTS.scales, y: { ...CHART_OPTS.scales.y, min: 0 } } });
 
   // ─── History ───
   const histCard = document.getElementById('history-card');
