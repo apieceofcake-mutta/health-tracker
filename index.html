@@ -225,8 +225,8 @@
     .row .field { flex: 1; }
 
     /* PFC Fields */
-    .pfc-row { display: flex; gap: 8px; margin-bottom: 14px; }
-    .pfc-item { flex: 1; }
+    .pfc-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .pfc-item { width: 100%; }
     .pfc-label {
       font-size: 10px;
       font-weight: 700;
@@ -240,8 +240,8 @@
       background: var(--bg-input);
       border: 1px solid;
       border-radius: var(--radius-md);
-      padding: 0 10px;
-      height: 44px;
+      padding: 0 14px;
+      height: 48px;
     }
     .pfc-wrap input {
       flex: 1;
@@ -249,15 +249,16 @@
       border: none;
       outline: none;
       font-family: var(--font-mono);
-      font-size: 17px;
-      font-weight: 700;
+      font-size: 20px;
+      font-weight: 500;
       min-width: 0;
       -webkit-appearance: none;
     }
     .pfc-unit {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 12px;
       opacity: 0.6;
+      margin-left: 4px;
     }
 
     /* Rating Selector */
@@ -1096,14 +1097,6 @@
               <span class="info-label">バージョン</span>
               <span class="info-value">1.0.0</span>
             </div>
-            <div class="info-row">
-              <span class="info-label">データ保存先</span>
-              <span class="info-value">端末内（ローカル）</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">記録可能項目</span>
-              <span class="info-value">必須9 + 任意3</span>
-            </div>
           </div>
         </div>
       </div>
@@ -1226,9 +1219,13 @@ function getWday(str) {
 }
 
 function addDays(str, n) {
-  const d = new Date(str + 'T00:00:00');
+  const parts = str.split('-');
+  const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
   d.setDate(d.getDate() + n);
-  return d.toISOString().split('T')[0];
+  const yy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${yy}-${mm}-${dd}`;
 }
 
 /* ═══════════════════════════════════════════
