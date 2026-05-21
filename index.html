@@ -530,6 +530,21 @@
           </div>
         </div>
         <div class="section-block">
+          <div class="section-label">🎯  目標値設定</div>
+          <div class="settings-card" style="padding:14px 15px">
+            <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px">グラフのY軸範囲に反映されます。空欄の項目は実測値から自動設定します。</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="field" style="margin-bottom:0"><label class="field-label">目標体重</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="decimal" id="goal-weight" placeholder="--"><span class="input-unit">kg</span></div></div>
+              <div class="field" style="margin-bottom:0"><label class="field-label">目標体脂肪率</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="decimal" id="goal-bodyfat" placeholder="--"><span class="input-unit">%</span></div></div>
+              <div class="field" style="margin-bottom:0"><label class="field-label">目標筋肉量</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="decimal" id="goal-muscle" placeholder="--"><span class="input-unit">kg</span></div></div>
+              <div class="field" style="margin-bottom:0"><label class="field-label">目標摂取カロリー</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="numeric" id="goal-calorie" placeholder="--"><span class="input-unit">kcal</span></div></div>
+              <div class="field" style="margin-bottom:0"><label class="field-label">目標睡眠時間</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="decimal" id="goal-sleep" placeholder="--"><span class="input-unit">h</span></div></div>
+              <div class="field" style="margin-bottom:0"><label class="field-label">目標歩数</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="numeric" id="goal-steps" placeholder="--"><span class="input-unit">歩</span></div></div>
+            </div>
+            <button class="save-btn" style="margin:14px 0 0;height:44px;font-size:13px" onclick="saveGoals()">目標値を保存</button>
+          </div>
+        </div>
+        <div class="section-block">
           <div class="section-label">ℹ️  アプリ情報</div>
           <div class="settings-card"><div class="info-row"><span class="info-label">バージョン</span><span class="info-value">1.0.0</span></div></div>
         </div>
@@ -694,70 +709,226 @@ function switchTab(tab) {
   if(tab==='settings') renderStats();
 }
 
+/* Goals */
+const GOAL_KEYS = ['weight','bodyfat','muscle','calorie','sleep','steps'];
+function saveGoals() {
+  GOAL_KEYS.forEach(k => {
+    const v = document.getElementById(`goal-${k}`).value.trim();
+    if (v !== '') localStorage.setItem(`goal_${k}`, v);
+    else localStorage.removeItem(`goal_${k}`);
+  });
+  showToast('🎯 目標値を保存しました');
+  if (state.currentTab === 'graph') renderGraphs();
+}
+function loadGoals() {
+  GOAL_KEYS.forEach(k => {
+    const v = localStorage.getItem(`goal_${k}`);
+    const el = document.getElementById(`goal-${k}`);
+    if (el && v != null) el.value = v;
+  });
+}
+function getGoal(k) {
+  const v = localStorage.getItem(`goal_${k}`);
+  return v != null ? parseFloat(v) : null;
+}
+
 /* Charts */
-const CHART_OPTS = {
-  responsive:true, maintainAspectRatio:true, animation:{duration:300},
-  plugins:{
-    legend:{display:false},
-    tooltip:{backgroundColor:'#1e293b',borderColor:'#334155',borderWidth:1,titleColor:'#f8fafc',bodyColor:'#94a3b8',padding:10}
+const BASE_OPTS = {
+  responsive: true, maintainAspectRatio: true, animation: { duration: 300 },
+  spanGaps: true, // ①欠損日をスキップして線を繋ぐ
+  plugins: {
+    legend: { display: false },
+    tooltip: { backgroundColor:'#1e293b', borderColor:'#334155', borderWidth:1, titleColor:'#f8fafc', bodyColor:'#94a3b8', padding:10 }
   },
-  scales:{
-    x:{grid:{color:'#f1f5f9',drawBorder:false},ticks:{color:'#94a3b8',font:{family:"'DM Mono'",size:10},maxRotation:0}},
-    y:{grid:{color:'#f1f5f9',drawBorder:false},ticks:{color:'#94a3b8',font:{family:"'DM Mono'",size:10}}}
+  scales: {
+    x: { grid:{ color:'#f1f5f9', drawBorder:false }, ticks:{ color:'#94a3b8', font:{ family:"'DM Mono'", size:10 }, maxRotation:0 } },
+    y: { grid:{ color:'#f1f5f9', drawBorder:false }, ticks:{ color:'#94a3b8', font:{ family:"'DM Mono'", size:10 } } }
   }
 };
-function mkDS(data,color,label='') {
-  return { label,data,borderColor:color,backgroundColor:color+'18',borderWidth:2.5,
-    pointRadius:4,pointBackgroundColor:color,pointBorderColor:'#fff',pointBorderWidth:2,tension:0.3,fill:true };
+
+// ②塗りつぶしなし・線のみの標準データセット
+function mkLine(data, color, label='') {
+  return {
+    label, data, borderColor: color,
+    backgroundColor: 'transparent', // ②塗りつぶしなし
+    borderWidth: 2.5, fill: false,
+    pointRadius: 4, pointBackgroundColor: color,
+    pointBorderColor: '#fff', pointBorderWidth: 2,
+    tension: 0.3, spanGaps: true,
+  };
 }
-function thinLabels(labels,max=8) {
-  if(labels.length<=max) return labels;
-  const step=Math.ceil(labels.length/max);
-  return labels.map((l,i)=>i%step===0?l:'');
+
+// ③PFC積み上げ用データセット（薄い塗りつぶしあり）
+function mkStackLine(data, color, label='') {
+  return {
+    label, data, borderColor: color,
+    backgroundColor: color + '30', // ③薄い塗りつぶし
+    borderWidth: 2, fill: true,
+    pointRadius: 3, pointBackgroundColor: color,
+    pointBorderColor: '#fff', pointBorderWidth: 1.5,
+    tension: 0.3, spanGaps: true,
+  };
 }
-function renderChart(cid,eid,labels,datasets,extra={}) {
-  const canvas=document.getElementById(cid), empty=document.getElementById(eid);
-  const hasData=datasets.some(d=>d.data.some(v=>v!=null));
-  if(!hasData){canvas.style.display='none';empty.style.display='flex';return;}
-  canvas.style.display='block';empty.style.display='none';
-  if(state.charts[cid]) state.charts[cid].destroy();
-  state.charts[cid]=new Chart(canvas,{type:'line',data:{labels:thinLabels(labels),datasets},options:{...CHART_OPTS,...extra}});
+
+function thinLabels(labels, max=8) {
+  if (labels.length <= max) return labels;
+  const step = Math.ceil(labels.length / max);
+  return labels.map((l,i) => i % step === 0 ? l : '');
 }
+
+// ⑤目標値を踏まえたY軸範囲計算
+function calcYRange(values, goal, paddingRatio=0.15) {
+  const valid = values.filter(v => v != null);
+  if (!valid.length) return {};
+  const dataMin = Math.min(...valid);
+  const dataMax = Math.max(...valid);
+  const allVals = goal != null ? [...valid, goal] : valid;
+  let yMin = Math.min(...allVals);
+  let yMax = Math.max(...allVals);
+  const span = yMax - yMin || 1;
+  // 実測値の範囲から過度に広がる場合は制限（目標が実測から2倍以上離れていたらクリップ）
+  const dataSpan = dataMax - dataMin || 1;
+  if (goal != null) {
+    if (goal < dataMin && (dataMin - goal) > dataSpan * 2) yMin = dataMin - dataSpan * 0.5;
+    if (goal > dataMax && (goal - dataMax) > dataSpan * 2) yMax = dataMax + dataSpan * 0.5;
+  }
+  const pad = (yMax - yMin || 1) * paddingRatio;
+  return { min: Math.max(0, parseFloat((yMin - pad).toFixed(1))), max: parseFloat((yMax + pad).toFixed(1)) };
+}
+
+function renderChart(cid, eid, labels, datasets, extraOpts={}) {
+  const canvas = document.getElementById(cid), empty = document.getElementById(eid);
+  const hasData = datasets.some(d => d.data.some(v => v != null));
+  if (!hasData) { canvas.style.display='none'; empty.style.display='flex'; return; }
+  canvas.style.display='block'; empty.style.display='none';
+  if (state.charts[cid]) state.charts[cid].destroy();
+  const opts = JSON.parse(JSON.stringify(BASE_OPTS));
+  opts.spanGaps = true;
+  // extraOptsのscalesをdeep merge
+  if (extraOpts.scales?.y) {
+    opts.scales.y = { ...opts.scales.y, ...extraOpts.scales.y };
+  }
+  if (extraOpts.scales?.y?.stacked) opts.scales.y.stacked = true;
+  if (extraOpts.scales?.x?.stacked) opts.scales.x.stacked = true;
+  state.charts[cid] = new Chart(canvas, {
+    type: 'line',
+    data: { labels: thinLabels(labels), datasets },
+    options: opts,
+  });
+}
+
 async function renderGraphs() {
-  const all=await dbGetAll();
-  const cutoff=new Date(); cutoff.setDate(cutoff.getDate()-state.graphPeriod);
-  const records=all.filter(r=>new Date(r.date+'T00:00:00')>=cutoff);
-  const banner=document.getElementById('summary-banner'), noData=document.getElementById('no-graph-data');
-  if(!records.length){banner.style.display='none';noData.style.display='flex';}
+  const all = await dbGetAll();
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - state.graphPeriod);
+  const records = all.filter(r => new Date(r.date+'T00:00:00') >= cutoff);
+
+  const banner = document.getElementById('summary-banner'), noData = document.getElementById('no-graph-data');
+  if (!records.length) { banner.style.display='none'; noData.style.display='flex'; }
   else {
-    noData.style.display='none';banner.style.display='flex';
-    const latest=records[records.length-1],oldest=records[0];
-    document.getElementById('sum-weight').textContent=latest.weight!=null?`${latest.weight} kg`:'--';
-    document.getElementById('sum-days').textContent=records.length+' 日';
-    if(latest.weight!=null&&oldest.weight!=null&&records.length>1){
+    noData.style.display='none'; banner.style.display='flex';
+    const latest=records[records.length-1], oldest=records[0];
+    document.getElementById('sum-weight').textContent = latest.weight!=null ? `${latest.weight} kg` : '--';
+    document.getElementById('sum-days').textContent = records.length+' 日';
+    if (latest.weight!=null && oldest.weight!=null && records.length>1) {
       const diff=(latest.weight-oldest.weight).toFixed(1);
       const el=document.getElementById('sum-diff');
       el.textContent=(parseFloat(diff)>0?'+':'')+diff+' kg';
       el.style.color=parseFloat(diff)<=0?'var(--success)':'var(--danger)';
     } else document.getElementById('sum-diff').textContent='--';
   }
-  const labels=records.map(r=>r.date.slice(5).replace('-','/'));
-  const yExtra=(mn,mx)=>({scales:{...CHART_OPTS.scales,y:{...CHART_OPTS.scales.y,min:mn,max:mx}}});
-  renderChart('chart-weight','empty-weight',labels,[mkDS(records.map(r=>r.weight),'var(--col-weight)')]);
-  renderChart('chart-bodyfat','empty-bodyfat',labels,[mkDS(records.map(r=>r.bodyFat),'var(--col-fat)')]);
-  renderChart('chart-muscle','empty-muscle',labels,[mkDS(records.map(r=>r.muscleMass),'var(--col-muscle)')]);
-  renderChart('chart-calorie','empty-calorie',labels,[mkDS(records.map(r=>r.calorieIntake),'var(--col-calorie)')]);
-  renderChart('chart-exercise','empty-exercise',labels,[mkDS(records.map(r=>r.exerciseCalories),'var(--col-exercise)')]);
-  renderChart('chart-pfc','empty-pfc',labels,[mkDS(records.map(r=>r.protein),'var(--col-protein)','P'),mkDS(records.map(r=>r.fat),'var(--col-fat)','F'),mkDS(records.map(r=>r.carbs),'var(--col-carbs)','C')]);
-  renderChart('chart-sleep','empty-sleep',labels,[mkDS(records.map(r=>r.sleepHours),'var(--col-sleep)')],yExtra(0,undefined));
-  renderChart('chart-condition','empty-condition',labels,[mkDS(records.map(r=>r.satisfaction),'var(--col-sat)','満足度'),mkDS(records.map(r=>r.fatigue),'var(--col-fatigue)','疲労感')],yExtra(0,5));
-  renderChart('chart-steps','empty-steps',labels,[mkDS(records.map(r=>r.steps),'var(--col-steps)')],yExtra(0,undefined));
-  const histCard=document.getElementById('history-card'),histList=document.getElementById('history-list');
-  if(records.length){
+
+  const labels = records.map(r => r.date.slice(5).replace('-','/'));
+
+  // 目標値取得
+  const gWeight  = getGoal('weight');
+  const gBodyfat = getGoal('bodyfat');
+  const gMuscle  = getGoal('muscle');
+  const gCalorie = getGoal('calorie');
+  const gSleep   = getGoal('sleep');
+  const gSteps   = getGoal('steps');
+
+  // ── Body ──
+  const wVals  = records.map(r=>r.weight);
+  const bfVals = records.map(r=>r.bodyFat);
+  const mVals  = records.map(r=>r.muscleMass);
+  renderChart('chart-weight',  'empty-weight',  labels, [mkLine(wVals, 'var(--col-weight)')],  { scales:{ y: calcYRange(wVals,  gWeight)  } });
+  renderChart('chart-bodyfat', 'empty-bodyfat', labels, [mkLine(bfVals,'var(--col-fat)')],     { scales:{ y: calcYRange(bfVals, gBodyfat) } });
+  renderChart('chart-muscle',  'empty-muscle',  labels, [mkLine(mVals, 'var(--col-muscle)')],  { scales:{ y: calcYRange(mVals,  gMuscle)  } });
+
+  // ── Nutrition ──
+  const cVals = records.map(r=>r.calorieIntake);
+  const eVals = records.map(r=>r.exerciseCalories);
+  renderChart('chart-calorie', 'empty-calorie', labels, [mkLine(cVals,'var(--col-calorie)')], { scales:{ y: calcYRange(cVals, gCalorie) } });
+  renderChart('chart-exercise','empty-exercise',labels, [mkLine(eVals,'var(--col-exercise)')],{ scales:{ y: calcYRange(eVals, null, 0.2) } });
+
+  // ③PFC積み上げ折れ線（下からP→F→C）
+  const pVals = records.map(r=>r.protein);
+  const fVals = records.map(r=>r.fat);
+  const crbVals = records.map(r=>r.carbs);
+  const pfcHasData = [...pVals,...fVals,...crbVals].some(v=>v!=null);
+  if (!pfcHasData) {
+    document.getElementById('chart-pfc').style.display='none';
+    document.getElementById('empty-pfc').style.display='flex';
+  } else {
+    document.getElementById('chart-pfc').style.display='block';
+    document.getElementById('empty-pfc').style.display='none';
+    if (state.charts['chart-pfc']) state.charts['chart-pfc'].destroy();
+    const pfcOpts = JSON.parse(JSON.stringify(BASE_OPTS));
+    pfcOpts.spanGaps = true;
+    pfcOpts.scales.y = { ...pfcOpts.scales.y, stacked: true, min: 0 };
+    pfcOpts.scales.x = { ...pfcOpts.scales.x, stacked: true };
+    pfcOpts.plugins.legend = { display: true, position:'bottom', labels:{ boxWidth:10, font:{ size:10 }, color:'#64748b', padding:12 } };
+    state.charts['chart-pfc'] = new Chart(document.getElementById('chart-pfc'), {
+      type: 'line',
+      data: {
+        labels: thinLabels(labels),
+        datasets: [
+          mkStackLine(pVals,   'rgba(249,115,22,0.8)',  'P タンパク質'),
+          mkStackLine(fVals,   'rgba(245,158,11,0.8)',  'F 脂質'),
+          mkStackLine(crbVals, 'rgba(16,185,129,0.8)',  'C 炭水化物'),
+        ]
+      },
+      options: pfcOpts,
+    });
+  }
+
+  // ── Condition ──
+  const slVals  = records.map(r=>r.sleepHours);
+  const satVals = records.map(r=>r.satisfaction);
+  const fatVals = records.map(r=>r.fatigue);
+  const stVals  = records.map(r=>r.steps);
+  renderChart('chart-sleep',    'empty-sleep',    labels, [mkLine(slVals, 'var(--col-sleep)')],  { scales:{ y: calcYRange(slVals, gSleep, 0.2) } });
+
+  // ④満足度・疲労感：塗りつぶしなし折れ線＋凡例表示
+  const condHasData = [...satVals,...fatVals].some(v=>v!=null);
+  if (!condHasData) {
+    document.getElementById('chart-condition').style.display='none';
+    document.getElementById('empty-condition').style.display='flex';
+  } else {
+    document.getElementById('chart-condition').style.display='block';
+    document.getElementById('empty-condition').style.display='none';
+    if (state.charts['chart-condition']) state.charts['chart-condition'].destroy();
+    const condOpts = JSON.parse(JSON.stringify(BASE_OPTS));
+    condOpts.spanGaps = true;
+    condOpts.scales.y = { ...condOpts.scales.y, min:0, max:5, ticks:{ ...condOpts.scales.y.ticks, stepSize:1 } };
+    condOpts.plugins.legend = { display:true, position:'bottom', labels:{ boxWidth:10, font:{ size:10 }, color:'#64748b', padding:12 } };
+    state.charts['chart-condition'] = new Chart(document.getElementById('chart-condition'), {
+      type: 'line',
+      data: { labels: thinLabels(labels), datasets: [ mkLine(satVals,'var(--col-sat)','満足度'), mkLine(fatVals,'var(--col-fatigue)','疲労感') ] },
+      options: condOpts,
+    });
+  }
+
+  renderChart('chart-steps','empty-steps',labels,[mkLine(stVals,'var(--col-steps)')], { scales:{ y: calcYRange(stVals, gSteps, 0.2) } });
+
+  // History
+  const histCard=document.getElementById('history-card'), histList=document.getElementById('history-list');
+  if (records.length) {
     histCard.style.display='block';
     histList.innerHTML=[...records].reverse().slice(0,10).map(r=>`<div class="history-row"><span class="history-date">${r.date.slice(5).replace('-','/')}</span><span class="history-val" style="color:var(--col-weight)">${r.weight!=null?r.weight+'kg':'--'}</span><span class="history-val" style="color:var(--col-calorie)">${r.calorieIntake!=null?r.calorieIntake+'kcal':'--'}</span><span class="history-val" style="color:var(--col-sleep)">${r.sleepHours!=null?r.sleepHours+'h':'--'}</span><span class="history-stars" style="color:var(--col-sat)">${'★'.repeat(r.satisfaction||0)}</span></div>`).join('');
   } else histCard.style.display='none';
 }
+
 function setPeriod(days) {
   state.graphPeriod=days;
   document.querySelectorAll('.period-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.days)===days));
@@ -915,7 +1086,7 @@ function showToast(msg) {
   clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
 }
 
-async function init() { await openDB(); await loadInputForm(); }
+async function init() { await openDB(); loadGoals(); await loadInputForm(); }
 init();
 </script>
 </body>
