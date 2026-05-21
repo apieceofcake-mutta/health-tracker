@@ -526,6 +526,7 @@
           <div class="settings-card">
             <div class="settings-row" onclick="exportCSV()"><div class="settings-icon" style="background:rgba(37,99,235,0.1)">📤</div><div class="settings-text"><div class="settings-label">CSVエクスポート</div><div class="settings-desc">全記録をCSVファイルに出力します</div></div><span class="settings-chevron">›</span></div>
             <div class="settings-row" onclick="document.getElementById('csv-file-input').click()"><div class="settings-icon" style="background:rgba(16,185,129,0.1)">📥</div><div class="settings-text"><div class="settings-label">CSVインポート</div><div class="settings-desc">バックアップCSVからデータを復元します</div></div><span class="settings-chevron">›</span></div>
+            <div class="settings-row" onclick="restoreFromSheets()"><div class="settings-icon" style="background:rgba(66,133,244,0.1)">☁️</div><div class="settings-text"><div class="settings-label">スプレッドシートから復元</div><div class="settings-desc">Googleスプレッドシートの全データを端末に復元します</div></div><span class="settings-chevron">›</span></div>
             <div class="settings-row" onclick="confirmDeleteAll()"><div class="settings-icon" style="background:rgba(239,68,68,0.1)">🗑</div><div class="settings-text"><div class="settings-label danger">全データを削除</div><div class="settings-desc">記録をすべて消去します（復元不可）</div></div><span class="settings-chevron">›</span></div>
           </div>
         </div>
@@ -628,6 +629,69 @@ function calcSleep() {
 }
 ['bedH','bedM','wakeH','wakeM'].forEach(id => document.getElementById(id).addEventListener('input', calcSleep));
 
+/* Google Sheets 同期 */
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyrbpth0nSUjjjUVVD637-HnS4s1g18seL1UkNJWvEPlctDsuA_sZCETS7_I5DoWmjm/exec';
+
+async function syncToSheets(record) {
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors', // CORSを回避（レスポンスは取得できないが送信は成功する）
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(record),
+    });
+    return true;
+  } catch(e) {
+    console.warn('Sheets sync failed:', e);
+    return false;
+  }
+}
+
+// スプレッドシートから全データを取得してIndexedDBに復元
+async function restoreFromSheets() {
+  showToast('🔄 スプレッドシートから復元中...');
+  try {
+    const res = await fetch(GAS_URL + '?t=' + Date.now());
+    const json = await res.json();
+    if (json.status !== 'ok' || !json.records.length) {
+      showToast('データが見つかりませんでした');
+      return;
+    }
+    // ヘッダー名→フィールド名マッピング
+    const MAP = {
+      '日付':'date','体重(kg)':'weight','体脂肪率(%)':'bodyFat','筋肉量(kg)':'muscleMass',
+      '基礎代謝(kcal)':'bmr','摂取カロリー(kcal)':'calorieIntake','タンパク質(g)':'protein',
+      '脂質(g)':'fat','炭水化物(g)':'carbs','運動消費カロリー(kcal)':'exerciseCalories',
+      '歩数':'steps','入眠(時)':'bedH','入眠(分)':'bedM','起床(時)':'wakeH','起床(分)':'wakeM',
+      '睡眠時間(h)':'sleepHours','満足度(1-5)':'satisfaction','疲労感(1-5)':'fatigue',
+      'メモ':'memo','腹囲(cm)':'waist','運動時間(h)':'exerciseDuration','水分摂取量(ml)':'water',
+    };
+    const toNum = v => (v===''||v===null) ? null : Number(v);
+    let count = 0;
+    for (const row of json.records) {
+      const r = {};
+      for (const [jpKey, enKey] of Object.entries(MAP)) {
+        const v = row[jpKey];
+        if (enKey === 'date' || enKey === 'memo') {
+          r[enKey] = (v===''||v===null) ? null : String(v);
+        } else {
+          r[enKey] = toNum(v);
+        }
+      }
+      if (!r.date) continue;
+      r.updatedAt = new Date().toISOString();
+      await dbPut(r);
+      count++;
+    }
+    await loadInputForm();
+    await renderStats();
+    showToast(`✅ ${count}件を復元しました`);
+  } catch(e) {
+    showToast('❌ 復元に失敗しました（オフライン？）');
+    console.error(e);
+  }
+}
+
 /* Form */
 const NUM_FIELDS = ['weight','bodyFat','muscleMass','bmr','calorieIntake','protein','fat','carbs','exerciseCalories','steps','waist','exerciseDuration','water'];
 const INT_FIELDS = new Set(['bmr','calorieIntake','exerciseCalories','steps','water']);
@@ -670,9 +734,15 @@ async function saveRecord() {
   record.satisfaction = state.satisfaction;
   record.fatigue      = state.fatigue;
   record.updatedAt    = new Date().toISOString();
+
+  // IndexedDBに保存
   await dbPut(record);
   updateDateNav(true);
-  showToast('✅ 保存しました');
+
+  // Googleスプレッドシートにも同期（バックグラウンド）
+  syncToSheets(record).then(ok => {
+    showToast(ok ? '✅ 保存・同期しました' : '✅ 保存しました（オフライン）');
+  });
 }
 
 /* Rating */
