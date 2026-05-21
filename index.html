@@ -533,14 +533,12 @@
           <div class="section-label">🎯  目標値設定</div>
           <div class="settings-card" style="padding:14px 15px">
             <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px">グラフのY軸範囲に反映されます。空欄の項目は実測値から自動設定します。</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-              <div class="field" style="margin-bottom:0"><label class="field-label">目標体重</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="decimal" id="goal-weight" placeholder="--"><span class="input-unit">kg</span></div></div>
-              <div class="field" style="margin-bottom:0"><label class="field-label">目標体脂肪率</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="decimal" id="goal-bodyfat" placeholder="--"><span class="input-unit">%</span></div></div>
-              <div class="field" style="margin-bottom:0"><label class="field-label">目標筋肉量</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="decimal" id="goal-muscle" placeholder="--"><span class="input-unit">kg</span></div></div>
-              <div class="field" style="margin-bottom:0"><label class="field-label">目標摂取カロリー</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="numeric" id="goal-calorie" placeholder="--"><span class="input-unit">kcal</span></div></div>
-              <div class="field" style="margin-bottom:0"><label class="field-label">目標睡眠時間</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="decimal" id="goal-sleep" placeholder="--"><span class="input-unit">h</span></div></div>
-              <div class="field" style="margin-bottom:0"><label class="field-label">目標歩数</label><div class="input-wrap" style="height:44px"><input type="number" inputmode="numeric" id="goal-steps" placeholder="--"><span class="input-unit">歩</span></div></div>
-            </div>
+            <div class="field"><label class="field-label">目標体重</label><div class="input-wrap"><input type="number" inputmode="decimal" id="goal-weight" placeholder="--"><span class="input-unit">kg</span></div></div>
+            <div class="field"><label class="field-label">目標体脂肪率</label><div class="input-wrap"><input type="number" inputmode="decimal" id="goal-bodyfat" placeholder="--"><span class="input-unit">%</span></div></div>
+            <div class="field"><label class="field-label">目標筋肉量</label><div class="input-wrap"><input type="number" inputmode="decimal" id="goal-muscle" placeholder="--"><span class="input-unit">kg</span></div></div>
+            <div class="field"><label class="field-label">目標摂取カロリー</label><div class="input-wrap"><input type="number" inputmode="numeric" id="goal-calorie" placeholder="--"><span class="input-unit">kcal</span></div></div>
+            <div class="field"><label class="field-label">目標睡眠時間</label><div class="input-wrap"><input type="number" inputmode="decimal" id="goal-sleep" placeholder="--"><span class="input-unit">h</span></div></div>
+            <div class="field" style="margin-bottom:0"><label class="field-label">目標歩数</label><div class="input-wrap"><input type="number" inputmode="numeric" id="goal-steps" placeholder="--"><span class="input-unit">歩</span></div></div>
             <button class="save-btn" style="margin:14px 0 0;height:44px;font-size:13px" onclick="saveGoals()">目標値を保存</button>
           </div>
         </div>
@@ -1088,6 +1086,24 @@ function showToast(msg) {
 
 async function init() { await openDB(); loadGoals(); await loadInputForm(); }
 init();
+
+// Service Worker 登録
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        // 新バージョンが検出されたら自動リロード
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'activated') {
+              window.location.reload();
+            }
+          });
+        });
+      });
+  });
+}
 </script>
 </body>
 </html>
