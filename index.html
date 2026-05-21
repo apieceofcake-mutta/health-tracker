@@ -946,16 +946,15 @@ async function renderGraphs() {
     pfcOpts.scales.y = { ...pfcOpts.scales.y, stacked: true, min: 0 };
     pfcOpts.scales.x = { ...pfcOpts.scales.x, stacked: true };
     pfcOpts.plugins.legend = { display: true, position:'bottom', labels:{ boxWidth:10, font:{ size:10 }, color:'#64748b', padding:12 } };
+    // ①塗りつぶし色を明示的にrgbaで指定（黒にならないよう）
+    const pfcDatasets = [
+      { label:'P タンパク質', data:pVals,   borderColor:'#f97316', backgroundColor:'rgba(249,115,22,0.18)',  borderWidth:2, fill:true, pointRadius:3, pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:1.5, tension:0.3, spanGaps:true },
+      { label:'F 脂質',       data:fVals,   borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,0.18)',  borderWidth:2, fill:true, pointRadius:3, pointBackgroundColor:'#f59e0b', pointBorderColor:'#fff', pointBorderWidth:1.5, tension:0.3, spanGaps:true },
+      { label:'C 炭水化物',   data:crbVals, borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.18)', borderWidth:2, fill:true, pointRadius:3, pointBackgroundColor:'#10b981', pointBorderColor:'#fff', pointBorderWidth:1.5, tension:0.3, spanGaps:true },
+    ];
     state.charts['chart-pfc'] = new Chart(document.getElementById('chart-pfc'), {
       type: 'line',
-      data: {
-        labels: thinLabels(labels),
-        datasets: [
-          mkStackLine(pVals,   'rgba(249,115,22,0.8)',  'P タンパク質'),
-          mkStackLine(fVals,   'rgba(245,158,11,0.8)',  'F 脂質'),
-          mkStackLine(crbVals, 'rgba(16,185,129,0.8)',  'C 炭水化物'),
-        ]
-      },
+      data: { labels: thinLabels(labels), datasets: pfcDatasets },
       options: pfcOpts,
     });
   }
@@ -965,9 +964,9 @@ async function renderGraphs() {
   const satVals = records.map(r=>r.satisfaction);
   const fatVals = records.map(r=>r.fatigue);
   const stVals  = records.map(r=>r.steps);
-  renderChart('chart-sleep',    'empty-sleep',    labels, [mkLine(slVals, 'var(--col-sleep)')],  { scales:{ y: calcYRange(slVals, gSleep, 0.2) } });
+  renderChart('chart-sleep', 'empty-sleep', labels, [mkLine(slVals, 'var(--col-sleep)')], { scales:{ y: calcYRange(slVals, gSleep, 0.2) } });
 
-  // ④満足度・疲労感：塗りつぶしなし折れ線＋凡例表示
+  // ②満足度（暖色：オレンジレッド）・疲労感（寒色：スチールブルー）
   const condHasData = [...satVals,...fatVals].some(v=>v!=null);
   if (!condHasData) {
     document.getElementById('chart-condition').style.display='none';
@@ -980,9 +979,12 @@ async function renderGraphs() {
     condOpts.spanGaps = true;
     condOpts.scales.y = { ...condOpts.scales.y, min:0, max:5, ticks:{ ...condOpts.scales.y.ticks, stepSize:1 } };
     condOpts.plugins.legend = { display:true, position:'bottom', labels:{ boxWidth:10, font:{ size:10 }, color:'#64748b', padding:12 } };
+    // 満足度：暖色（オレンジ系）、疲労感：寒色（ブルー系）、線幅・点サイズで重なっても判別しやすく
+    const satDS = { label:'満足度', data:satVals, borderColor:'#f97316', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:5, pointStyle:'circle',    pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true };
+    const fatDS = { label:'疲労感', data:fatVals, borderColor:'#3b82f6', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:5, pointStyle:'rectRounded', pointBackgroundColor:'#3b82f6', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true, borderDash:[6,3] };
     state.charts['chart-condition'] = new Chart(document.getElementById('chart-condition'), {
       type: 'line',
-      data: { labels: thinLabels(labels), datasets: [ mkLine(satVals,'var(--col-sat)','満足度'), mkLine(fatVals,'var(--col-fatigue)','疲労感') ] },
+      data: { labels: thinLabels(labels), datasets: [satDS, fatDS] },
       options: condOpts,
     });
   }
