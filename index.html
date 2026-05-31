@@ -1076,41 +1076,35 @@ async function renderGraphs() {
     if (state.charts['chart-condition']) state.charts['chart-condition'].destroy();
 
     // タップ検出用にrecordsとlabelsをクロージャで保持
-    const condRecords = records;
-    const condLabels  = labels;
-    // iOS touchend補助用にstateに保存
-    state.condRecordsForPopup = records;
-    // 間引き前の全ラベルも保存（インデックス逆引き用）
-    state.condAllLabels = labels;
+    const condRecords = records.slice();
+    const condLabels  = labels.slice();
+    state.condRecordsForPopup = condRecords;
+    state.condAllLabels       = condLabels;
 
     const condOpts = JSON.parse(JSON.stringify(BASE_OPTS));
     condOpts.spanGaps = true;
     condOpts.scales.y = { ...condOpts.scales.y, min:0, max:5, ticks:{ ...condOpts.scales.y.ticks, stepSize:1 } };
     condOpts.plugins.legend = { display:true, position:'bottom', labels:{ boxWidth:10, font:{ size:10 }, color:'#64748b', padding:12 } };
-    condOpts.interaction = { mode:'nearest', axis:'x', intersect:false };
+    // intersect:trueにしてドット直接タップのみ反応
+    condOpts.interaction = { mode:'nearest', axis:'xy', intersect:true };
     condOpts.onClick = (evt, elements) => {
       if (!elements.length) return;
-      // dataIndexは間引き後のインデックス→元のrecordsのインデックスに変換
       const dataIdx = elements[0].index;
+      // thinLabels適用後のインデックスから元recordsのインデックスを復元
       const thinned = thinLabels(condLabels);
-      // 間引き後ラベルのうちdataIdx番目が元ラベル配列の何番目かを特定
-      let count = -1;
-      let origIdx = -1;
+      let visible = -1;
       for (let i = 0; i < condLabels.length; i++) {
-        if (thinned[i] !== '') count++;
-        if (count === dataIdx) { origIdx = i; break; }
+        if (thinned[i] !== '') visible++;
+        if (visible === dataIdx) {
+          showMemoPopup(condRecords[i]);
+          return;
+        }
       }
-      // 間引きなし（全ラベル表示）の場合はそのまま
-      if (origIdx < 0) origIdx = dataIdx;
-      const record = condRecords[origIdx];
-      if (!record) return;
-      showMemoPopup(record);
+      // thinLabelsなし（件数が少ない）場合
+      if (condRecords[dataIdx]) showMemoPopup(condRecords[dataIdx]);
     };
-    condOpts.onHover = (evt, elements) => {
-      if (evt.native) evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
-    };
-    const satDS = { label:'満足度', data:satVals, borderColor:'#f97316', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:6, pointHitRadius:24, pointStyle:'circle',     pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true };
-    const fatDS = { label:'疲労感', data:fatVals, borderColor:'#3b82f6', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:6, pointHitRadius:24, pointStyle:'rectRounded', pointBackgroundColor:'#3b82f6', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true, borderDash:[6,3] };
+    const satDS = { label:'満足度', data:satVals, borderColor:'#f97316', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:6, pointHitRadius:10, pointStyle:'circle',     pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true };
+    const fatDS = { label:'疲労感', data:fatVals, borderColor:'#3b82f6', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:6, pointHitRadius:10, pointStyle:'rectRounded', pointBackgroundColor:'#3b82f6', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true, borderDash:[6,3] };
     state.charts['chart-condition'] = new Chart(document.getElementById('chart-condition'), {
       type: 'line',
       data: { labels: thinLabels(condLabels), datasets: [satDS, fatDS] },
@@ -1318,29 +1312,30 @@ function setupConditionChartTouch() {
   canvas._touchBound = true;
   canvas.addEventListener('touchend', function(e) {
     e.preventDefault();
-    const touch = e.changedTouches[0];
-    const chart = state.charts['chart-condition'];
+    const touch   = e.changedTouches[0];
+    const chart   = state.charts['chart-condition'];
     if (!chart) return;
     const rect = canvas.getBoundingClientRect();
     const x    = touch.clientX - rect.left;
     const y    = touch.clientY - rect.top;
     const points = chart.getElementsAtEventForMode(
       { offsetX:x, offsetY:y, native:e },
-      'nearest', { axis:'x', intersect:false }, false
+      'nearest', { axis:'xy', intersect:true }, false
     );
     if (!points.length) return;
     const dataIdx   = points[0].index;
-    const records   = state.condRecordsForPopup || [];
     const allLabels = state.condAllLabels || [];
+    const records   = state.condRecordsForPopup || [];
     const thinned   = thinLabels(allLabels);
-    let count = -1, origIdx = -1;
+    let visible = -1;
     for (let i = 0; i < allLabels.length; i++) {
-      if (thinned[i] !== '') count++;
-      if (count === dataIdx) { origIdx = i; break; }
+      if (thinned[i] !== '') visible++;
+      if (visible === dataIdx) {
+        if (records[i]) showMemoPopup(records[i]);
+        return;
+      }
     }
-    if (origIdx < 0) origIdx = dataIdx;
-    const rec = records[origIdx];
-    if (rec) showMemoPopup(rec);
+    if (records[dataIdx]) showMemoPopup(records[dataIdx]);
   }, { passive:false });
 }
 let toastTimer;
