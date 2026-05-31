@@ -665,6 +665,12 @@
 </div>
 
 <script>
+/* Date utils - stateより先に定義する */
+function getTodayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function formatDateJP(s) { const d=new Date(s+'T00:00:00'); return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`; }
+function getWday(s) { const d=new Date(s+'T00:00:00'); return ['日','月','火','水','木','金','土'][d.getDay()]+'曜日'; }
+function addDays(s,n) { const p=s.split('-'); const d=new Date(+p[0],+p[1]-1,+p[2]); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
 const state = {
   currentDate: getTodayStr(), satisfaction: 5, fatigue: 5,
   currentTab: 'input', graphPeriod: 30, graphTab: 'body',
@@ -689,12 +695,6 @@ const dbGet = date => new Promise((res,rej) => { const r = db.transaction('recor
 const dbPut = rec  => new Promise((res,rej) => { const r = db.transaction('records','readwrite').objectStore('records').put(rec); r.onsuccess=e=>res(e.target.result); r.onerror=e=>rej(e.target.error); });
 const dbGetAll = () => new Promise((res,rej) => { const r = db.transaction('records','readonly').objectStore('records').getAll(); r.onsuccess=e=>res(e.target.result.sort((a,b)=>a.date.localeCompare(b.date))); r.onerror=e=>rej(e.target.error); });
 const dbDelete = date => new Promise((res,rej) => { const r = db.transaction('records','readwrite').objectStore('records').delete(date); r.onsuccess=()=>res(); r.onerror=e=>rej(e.target.error); });
-
-/* Date utils */
-function getTodayStr() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function formatDateJP(s) { const d=new Date(s+'T00:00:00'); return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`; }
-function getWday(s) { const d=new Date(s+'T00:00:00'); return ['日','月','火','水','木','金','土'][d.getDay()]+'曜日'; }
-function addDays(s,n) { const p=s.split('-'); const d=new Date(+p[0],+p[1]-1,+p[2]); d.setDate(d.getDate()+n); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
 /* Date nav */
 function updateDateNav(hasSaved) {
@@ -1300,8 +1300,12 @@ function showMemoPopup(record) {
   const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wdays[d.getDay()]}）`;
   document.getElementById('memo-popup-date').textContent = dateStr;
 
-  // 1-5スケールの既存データは×2して表示
-  const normalize = v => (v != null && v <= 5) ? v * 2 : v;
+  // 1-5スケールの既存データは×2して表示（6以上はすでに10段階）
+  const normalize = v => {
+    if (v == null) return null;
+    const n = Number(v);
+    return (n >= 1 && n <= 5) ? n * 2 : n;
+  };
 
   const scores = document.getElementById('memo-popup-scores');
   scores.innerHTML = '';
@@ -1317,9 +1321,11 @@ function showMemoPopup(record) {
     scores.innerHTML = `<span style="font-size:12px;color:var(--text-muted)">スコアなし</span>`;
   }
 
+  // memoフィールドを確実に取得（英語キー・日本語キー両方対応）
+  const memoText = record.memo || record['メモ'] || '';
   const body = document.getElementById('memo-popup-body');
-  if (record.memo && record.memo.trim() !== '') {
-    body.innerHTML = `<div class="memo-popup-text">📝 ${record.memo}</div>`;
+  if (memoText && String(memoText).trim() !== '') {
+    body.innerHTML = `<div class="memo-popup-text">📝 ${String(memoText).trim()}</div>`;
   } else {
     body.innerHTML = `<div class="memo-popup-empty">メモなし</div>`;
   }
