@@ -1065,7 +1065,7 @@ async function renderGraphs() {
   const stVals  = records.map(r=>r.steps);
   renderChart('chart-sleep', 'empty-sleep', labels, [mkLine(slVals, 'var(--col-sleep)')], { scales:{ y: calcYRange(slVals, gSleep, 0.2) } });
 
-  // ②満足度（暖色：オレンジレッド）・疲労感（寒色：スチールブルー）
+  // ②満足度（暖色）・疲労感（寒色）
   const condHasData = [...satVals,...fatVals].some(v=>v!=null);
   if (!condHasData) {
     document.getElementById('chart-condition').style.display='none';
@@ -1075,42 +1075,49 @@ async function renderGraphs() {
     document.getElementById('empty-condition').style.display='none';
     if (state.charts['chart-condition']) state.charts['chart-condition'].destroy();
 
-    // タップ検出用にrecordsとlabelsをクロージャで保持
-    const condRecords = records.slice();
-    const condLabels  = labels.slice();
-    state.condRecordsForPopup = condRecords;
-    state.condAllLabels       = condLabels;
+    // recordsをstateに保存（タップ時に直接インデックスで参照）
+    state.condRecordsForPopup = records.slice();
 
     const condOpts = JSON.parse(JSON.stringify(BASE_OPTS));
     condOpts.spanGaps = true;
     condOpts.scales.y = { ...condOpts.scales.y, min:0, max:5, ticks:{ ...condOpts.scales.y.ticks, stepSize:1 } };
+    // X軸ラベルはChart.jsのmaxTicksLimitで自動間引き（データは全件保持）
+    condOpts.scales.x = { ...condOpts.scales.x, ticks:{ ...condOpts.scales.x.ticks, maxTicksLimit:8, maxRotation:0 } };
     condOpts.plugins.legend = { display:true, position:'bottom', labels:{ boxWidth:10, font:{ size:10 }, color:'#64748b', padding:12 } };
-    // intersect:trueにしてドット直接タップのみ反応
-    condOpts.interaction = { mode:'nearest', axis:'xy', intersect:true };
+    condOpts.interaction = { mode:'index', axis:'x', intersect:false };
+    // onClickはindexがrecords配列の直接インデックスになる
     condOpts.onClick = (evt, elements) => {
       if (!elements.length) return;
-      const dataIdx = elements[0].index;
-      // thinLabels適用後のインデックスから元recordsのインデックスを復元
-      const thinned = thinLabels(condLabels);
-      let visible = -1;
-      for (let i = 0; i < condLabels.length; i++) {
-        if (thinned[i] !== '') visible++;
-        if (visible === dataIdx) {
-          showMemoPopup(condRecords[i]);
-          return;
-        }
-      }
-      // thinLabelsなし（件数が少ない）場合
-      if (condRecords[dataIdx]) showMemoPopup(condRecords[dataIdx]);
+      const i = elements[0].index;
+      const rec = state.condRecordsForPopup[i];
+      if (rec) showMemoPopup(rec);
     };
-    const satDS = { label:'満足度', data:satVals, borderColor:'#f97316', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:6, pointHitRadius:10, pointStyle:'circle',     pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true };
-    const fatDS = { label:'疲労感', data:fatVals, borderColor:'#3b82f6', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:6, pointHitRadius:10, pointStyle:'rectRounded', pointBackgroundColor:'#3b82f6', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true, borderDash:[6,3] };
-    state.charts['chart-condition'] = new Chart(document.getElementById('chart-condition'), {
-      type: 'line',
-      data: { labels: thinLabels(condLabels), datasets: [satDS, fatDS] },
-      options: condOpts,
-    });
-    // iOSタッチ補助を設定
+
+    const satDS = {
+      label:'満足度', data:satVals,
+      borderColor:'#f97316', backgroundColor:'transparent',
+      borderWidth:3, fill:false,
+      pointRadius:6, pointHitRadius:10, pointStyle:'circle',
+      pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:2,
+      tension:0.3, spanGaps:true,
+    };
+    const fatDS = {
+      label:'疲労感', data:fatVals,
+      borderColor:'#3b82f6', backgroundColor:'transparent',
+      borderWidth:3, fill:false,
+      pointRadius:6, pointHitRadius:10, pointStyle:'rectRounded',
+      pointBackgroundColor:'#3b82f6', pointBorderColor:'#fff', pointBorderWidth:2,
+      tension:0.3, spanGaps:true, borderDash:[6,3],
+    };
+
+    // labelsはthinせずそのまま渡す（インデックスをrecordsと完全一致させる）
+    state.charts['chart-condition'] = new Chart(
+      document.getElementById('chart-condition'), {
+        type: 'line',
+        data: { labels, datasets: [satDS, fatDS] },
+        options: condOpts,
+      }
+    );
     setupConditionChartTouch();
   }
 
@@ -1312,30 +1319,21 @@ function setupConditionChartTouch() {
   canvas._touchBound = true;
   canvas.addEventListener('touchend', function(e) {
     e.preventDefault();
-    const touch   = e.changedTouches[0];
-    const chart   = state.charts['chart-condition'];
+    const touch = e.changedTouches[0];
+    const chart = state.charts['chart-condition'];
     if (!chart) return;
     const rect = canvas.getBoundingClientRect();
     const x    = touch.clientX - rect.left;
     const y    = touch.clientY - rect.top;
     const points = chart.getElementsAtEventForMode(
       { offsetX:x, offsetY:y, native:e },
-      'nearest', { axis:'xy', intersect:true }, false
+      'index', { axis:'x', intersect:false }, false
     );
     if (!points.length) return;
-    const dataIdx   = points[0].index;
-    const allLabels = state.condAllLabels || [];
-    const records   = state.condRecordsForPopup || [];
-    const thinned   = thinLabels(allLabels);
-    let visible = -1;
-    for (let i = 0; i < allLabels.length; i++) {
-      if (thinned[i] !== '') visible++;
-      if (visible === dataIdx) {
-        if (records[i]) showMemoPopup(records[i]);
-        return;
-      }
-    }
-    if (records[dataIdx]) showMemoPopup(records[dataIdx]);
+    // indexはrecords配列の直接インデックス
+    const i   = points[0].index;
+    const rec = (state.condRecordsForPopup || [])[i];
+    if (rec) showMemoPopup(rec);
   }, { passive:false });
 }
 let toastTimer;
