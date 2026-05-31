@@ -713,11 +713,10 @@ async function renderGraphs() {
   } else {
     noData.style.display='none'; banner.style.display='flex';
     const latest = records[records.length-1], oldest = records[0];
-    document.getElementById('sum-weight').textContent = latest.weight!=null ? latest.weight+' kg' : '--';
+    const latestW = latest.weight != null ? parseFloat(latest.weight) : null;
+    const oldestW = records.length > 1 ? (oldest.weight != null ? parseFloat(oldest.weight) : null) : latestW;
+    document.getElementById('sum-weight').textContent = latestW != null ? latestW+' kg' : '--';
     document.getElementById('sum-days').textContent   = records.length+' 日';
-    // 期間変化：最新と最古の体重差（1件のみの場合は±0表示）
-    const latestW = latest.weight;
-    const oldestW = records.length > 1 ? oldest.weight : latest.weight;
     if (latestW != null && oldestW != null) {
       const diff = (latestW - oldestW).toFixed(1);
       const el = document.getElementById('sum-diff');
@@ -856,10 +855,10 @@ function showMemoPopup(record) {
   if (fat != null && !isNaN(fat)) scores.innerHTML += `<div class="memo-score"><div class="memo-dot" style="background:#3b82f6"></div><span style="color:#3b82f6">疲労感 ${fat}/10</span></div>`;
   if ((!sat || isNaN(sat)) && (!fat || isNaN(fat))) scores.innerHTML = `<span style="font-size:12px;color:var(--text-muted)">スコアなし</span>`;
 
-  // memoは英語キー・日本語キー・文字列変換すべて対応
-  const rawMemo = record.memo ?? record['メモ'] ?? record['memo'] ?? '';
-  const memo = String(rawMemo).trim();
-  document.getElementById('memo-body').innerHTML = (memo && memo !== 'null' && memo !== 'undefined')
+  // memoフィールドを全キーパターンで取得
+  const rawMemo = record.memo ?? record['メモ'] ?? '';
+  const memo = (rawMemo != null && rawMemo !== 'null') ? String(rawMemo).trim() : '';
+  document.getElementById('memo-body').innerHTML = memo
     ? `<div class="memo-text">📝 ${memo}</div>`
     : `<div class="memo-empty">メモなし</div>`;
 
@@ -958,14 +957,18 @@ document.getElementById('btn-delete-all').addEventListener('click', async () => 
   renderStats(); showToast('🗑 全データを削除しました');
 });
 
-// 最新レコードのメモフィールドを確認するデバッグ機能
+// データ確認：メモが入っているレコードを探して表示
 document.getElementById('btn-check-memo').addEventListener('click', async () => {
   const records = await dbGetAll();
   if (!records.length) { alert('データがありません'); return; }
-  const latest = records[records.length-1];
-  const keys = Object.keys(latest);
-  const memoVal = latest.memo;
-  alert(`最新レコード: ${latest.date}\n\nメモ値: "${memoVal}"\n型: ${typeof memoVal}\n\n全フィールド:\n${keys.map(k=>`${k}: ${JSON.stringify(latest[k])}`).join('\n')}`);
+  // メモが入っているレコードを探す
+  const withMemo = records.filter(r => r.memo && String(r.memo).trim() !== '' && r.memo !== 'null');
+  if (!withMemo.length) {
+    alert(`全${records.length}件のレコードを確認しましたが、\nmemoフィールドにデータが入っているレコードがありませんでした。\n\n最新レコード(${records[records.length-1].date})の全フィールド:\n${Object.entries(records[records.length-1]).map(([k,v])=>`${k}: ${JSON.stringify(v)}`).join('\n')}`);
+  } else {
+    const r = withMemo[withMemo.length-1];
+    alert(`メモあり: ${withMemo.length}件 / 全${records.length}件\n\n最新メモ入りレコード(${r.date}):\nmemo: "${r.memo}"\nsatisfaction: ${r.satisfaction}\nfatigue: ${r.fatigue}`);
+  }
 });
 
 /* ── Toast ── */
