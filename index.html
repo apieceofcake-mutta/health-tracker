@@ -482,21 +482,31 @@
         <div class="field">
           <label class="field-label">1日の満足度</label>
           <div class="rating-row" id="rating-satisfaction">
-            <button class="rating-btn" data-val="1" onclick="setRating('satisfaction',1)"><span class="rating-num">1</span><span class="rating-sub">低い</span></button>
-            <button class="rating-btn" data-val="2" onclick="setRating('satisfaction',2)"><span class="rating-num">2</span><span class="rating-sub">やや低</span></button>
-            <button class="rating-btn" data-val="3" onclick="setRating('satisfaction',3)"><span class="rating-num">3</span><span class="rating-sub">普通</span></button>
-            <button class="rating-btn" data-val="4" onclick="setRating('satisfaction',4)"><span class="rating-num">4</span><span class="rating-sub">やや高</span></button>
-            <button class="rating-btn" data-val="5" onclick="setRating('satisfaction',5)"><span class="rating-num">5</span><span class="rating-sub">高い</span></button>
+            <button class="rating-btn" data-val="1"  onclick="setRating('satisfaction',1)"><span class="rating-num">1</span></button>
+            <button class="rating-btn" data-val="2"  onclick="setRating('satisfaction',2)"><span class="rating-num">2</span></button>
+            <button class="rating-btn" data-val="3"  onclick="setRating('satisfaction',3)"><span class="rating-num">3</span></button>
+            <button class="rating-btn" data-val="4"  onclick="setRating('satisfaction',4)"><span class="rating-num">4</span></button>
+            <button class="rating-btn" data-val="5"  onclick="setRating('satisfaction',5)"><span class="rating-num">5</span></button>
+            <button class="rating-btn" data-val="6"  onclick="setRating('satisfaction',6)"><span class="rating-num">6</span></button>
+            <button class="rating-btn" data-val="7"  onclick="setRating('satisfaction',7)"><span class="rating-num">7</span></button>
+            <button class="rating-btn" data-val="8"  onclick="setRating('satisfaction',8)"><span class="rating-num">8</span></button>
+            <button class="rating-btn" data-val="9"  onclick="setRating('satisfaction',9)"><span class="rating-num">9</span></button>
+            <button class="rating-btn" data-val="10" onclick="setRating('satisfaction',10)"><span class="rating-num">10</span></button>
           </div>
         </div>
         <div class="field">
           <label class="field-label">疲労感</label>
           <div class="rating-row" id="rating-fatigue">
-            <button class="rating-btn" data-val="1" onclick="setRating('fatigue',1)"><span class="rating-num">1</span><span class="rating-sub">なし</span></button>
-            <button class="rating-btn" data-val="2" onclick="setRating('fatigue',2)"><span class="rating-num">2</span><span class="rating-sub">わずか</span></button>
-            <button class="rating-btn" data-val="3" onclick="setRating('fatigue',3)"><span class="rating-num">3</span><span class="rating-sub">普通</span></button>
-            <button class="rating-btn" data-val="4" onclick="setRating('fatigue',4)"><span class="rating-num">4</span><span class="rating-sub">かなり</span></button>
-            <button class="rating-btn" data-val="5" onclick="setRating('fatigue',5)"><span class="rating-num">5</span><span class="rating-sub">極度</span></button>
+            <button class="rating-btn" data-val="1"  onclick="setRating('fatigue',1)"><span class="rating-num">1</span></button>
+            <button class="rating-btn" data-val="2"  onclick="setRating('fatigue',2)"><span class="rating-num">2</span></button>
+            <button class="rating-btn" data-val="3"  onclick="setRating('fatigue',3)"><span class="rating-num">3</span></button>
+            <button class="rating-btn" data-val="4"  onclick="setRating('fatigue',4)"><span class="rating-num">4</span></button>
+            <button class="rating-btn" data-val="5"  onclick="setRating('fatigue',5)"><span class="rating-num">5</span></button>
+            <button class="rating-btn" data-val="6"  onclick="setRating('fatigue',6)"><span class="rating-num">6</span></button>
+            <button class="rating-btn" data-val="7"  onclick="setRating('fatigue',7)"><span class="rating-num">7</span></button>
+            <button class="rating-btn" data-val="8"  onclick="setRating('fatigue',8)"><span class="rating-num">8</span></button>
+            <button class="rating-btn" data-val="9"  onclick="setRating('fatigue',9)"><span class="rating-num">9</span></button>
+            <button class="rating-btn" data-val="10" onclick="setRating('fatigue',10)"><span class="rating-num">10</span></button>
           </div>
         </div>
 
@@ -561,7 +571,7 @@
         <div class="graph-panel" id="panel-condition">
           <div class="chart-card"><div class="chart-title">😴  睡眠時間 (h)</div><div class="chart-wrap"><canvas id="chart-sleep"></canvas></div><div class="chart-empty" id="empty-sleep" style="display:none">データがありません</div></div>
           <div class="chart-card">
-            <div class="chart-title">⭐  満足度 / 疲労感 (1–5)</div>
+            <div class="chart-title">⭐  満足度 / 疲労感 (1–10)</div>
             <div style="font-size:10px;color:var(--text-muted);margin-bottom:8px">💬 グラフの点をタップするとメモを表示</div>
             <div class="legend-row">
               <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div><span class="legend-text">満足度</span></div>
@@ -589,7 +599,7 @@
             <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-weight)" id="stat-weight">--</div><div class="stats-cell-unit">kg</div><div class="stats-cell-label">平均体重</div></div>
             <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-fat)" id="stat-bodyfat">--</div><div class="stats-cell-unit">%</div><div class="stats-cell-label">平均体脂肪</div></div>
             <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-sleep)" id="stat-sleep">--</div><div class="stats-cell-unit">h</div><div class="stats-cell-label">平均睡眠</div></div>
-            <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-sat)" id="stat-satisfaction">--</div><div class="stats-cell-unit">/5</div><div class="stats-cell-label">平均満足度</div></div>
+            <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-sat)" id="stat-satisfaction">--</div><div class="stats-cell-unit">/10</div><div class="stats-cell-label">平均満足度</div></div>
             <div class="stats-cell"><div class="stats-cell-value" style="color:var(--col-steps)" id="stat-steps">--</div><div class="stats-cell-unit">歩</div><div class="stats-cell-label">総歩数</div></div>
           </div>
         </div>
@@ -656,7 +666,7 @@
 
 <script>
 const state = {
-  currentDate: getTodayStr(), satisfaction: 3, fatigue: 3,
+  currentDate: getTodayStr(), satisfaction: 5, fatigue: 5,
   currentTab: 'input', graphPeriod: 30, graphTab: 'body',
   charts: {}, optionalOpen: false,
 };
@@ -798,8 +808,8 @@ const INT_FIELDS = new Set(['bmr','calorieIntake','exerciseCalories','steps','wa
 function clearForm() {
   [...NUM_FIELDS,'bedH','bedM','wakeH','wakeM','memo'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('sleepCalc').textContent='--';
-  state.satisfaction=3; state.fatigue=3;
-  setRating('satisfaction',3); setRating('fatigue',3);
+  state.satisfaction=5; state.fatigue=5;
+  setRating('satisfaction',5); setRating('fatigue',5);
 }
 
 async function loadInputForm() {
@@ -810,8 +820,8 @@ async function loadInputForm() {
     ['bedH','bedM','wakeH','wakeM'].forEach(id => { if(record[id]!=null) document.getElementById(id).value=record[id]; });
     calcSleep();
     if (record.memo) document.getElementById('memo').value=record.memo;
-    setRating('satisfaction', record.satisfaction||3);
-    setRating('fatigue',      record.fatigue||3);
+    setRating('satisfaction', record.satisfaction||5);
+    setRating('fatigue',      record.fatigue||5);
     if (record.waist||record.exerciseDuration||record.water) { if(!state.optionalOpen) toggleOptional(); }
   }
   updateDateNav(!!record);
@@ -1060,12 +1070,13 @@ async function renderGraphs() {
 
   // ── Condition ──
   const slVals  = records.map(r=>r.sleepHours);
-  const satVals = records.map(r=>r.satisfaction);
-  const fatVals = records.map(r=>r.fatigue);
+  // 既存の1-5スケールデータは×2して1-10に正規化して表示
+  const satVals = records.map(r=> r.satisfaction != null ? (r.satisfaction <= 5 ? r.satisfaction * 2 : r.satisfaction) : null);
+  const fatVals = records.map(r=> r.fatigue     != null ? (r.fatigue     <= 5 ? r.fatigue     * 2 : r.fatigue)     : null);
   const stVals  = records.map(r=>r.steps);
   renderChart('chart-sleep', 'empty-sleep', labels, [mkLine(slVals, 'var(--col-sleep)')], { scales:{ y: calcYRange(slVals, gSleep, 0.2) } });
 
-  // ②満足度（暖色）・疲労感（寒色）
+  // 満足度・疲労感グラフ（タップでメモ表示）
   const condHasData = [...satVals,...fatVals].some(v=>v!=null);
   if (!condHasData) {
     document.getElementById('chart-condition').style.display='none';
@@ -1075,17 +1086,18 @@ async function renderGraphs() {
     document.getElementById('empty-condition').style.display='none';
     if (state.charts['chart-condition']) state.charts['chart-condition'].destroy();
 
-    // recordsをstateに保存（タップ時に直接インデックスで参照）
+    // タップ時参照用にrecordsをstateに保存
     state.condRecordsForPopup = records.slice();
 
     const condOpts = JSON.parse(JSON.stringify(BASE_OPTS));
     condOpts.spanGaps = true;
-    condOpts.scales.y = { ...condOpts.scales.y, min:0, max:5, ticks:{ ...condOpts.scales.y.ticks, stepSize:1 } };
-    // X軸ラベルはChart.jsのmaxTicksLimitで自動間引き（データは全件保持）
+    // Y軸は0-10固定
+    condOpts.scales.y = { ...condOpts.scales.y, min:0, max:10, ticks:{ ...condOpts.scales.y.ticks, stepSize:1 } };
+    // X軸ラベルはmaxTicksLimitで自動間引き（データインデックスは全件と一致）
     condOpts.scales.x = { ...condOpts.scales.x, ticks:{ ...condOpts.scales.x.ticks, maxTicksLimit:8, maxRotation:0 } };
     condOpts.plugins.legend = { display:true, position:'bottom', labels:{ boxWidth:10, font:{ size:10 }, color:'#64748b', padding:12 } };
+    // intersect:falseでX軸最近傍を検出（タップしやすい）
     condOpts.interaction = { mode:'index', axis:'x', intersect:false };
-    // onClickはindexがrecords配列の直接インデックスになる
     condOpts.onClick = (evt, elements) => {
       if (!elements.length) return;
       const i = elements[0].index;
@@ -1110,7 +1122,7 @@ async function renderGraphs() {
       tension:0.3, spanGaps:true, borderDash:[6,3],
     };
 
-    // labelsはthinせずそのまま渡す（インデックスをrecordsと完全一致させる）
+    // labelsはthinせずそのまま渡す（インデックス = records配列インデックス）
     state.charts['chart-condition'] = new Chart(
       document.getElementById('chart-condition'), {
         type: 'line',
@@ -1288,13 +1300,21 @@ function showMemoPopup(record) {
   const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wdays[d.getDay()]}）`;
   document.getElementById('memo-popup-date').textContent = dateStr;
 
+  // 1-5スケールの既存データは×2して表示
+  const normalize = v => (v != null && v <= 5) ? v * 2 : v;
+
   const scores = document.getElementById('memo-popup-scores');
   scores.innerHTML = '';
-  if (record.satisfaction != null) {
-    scores.innerHTML += `<div class="memo-popup-score"><div class="memo-popup-dot" style="background:#f97316"></div><span style="color:#f97316">満足度 ${record.satisfaction}</span></div>`;
+  const sat = normalize(record.satisfaction);
+  const fat = normalize(record.fatigue);
+  if (sat != null) {
+    scores.innerHTML += `<div class="memo-popup-score"><div class="memo-popup-dot" style="background:#f97316"></div><span style="color:#f97316">満足度 ${sat} / 10</span></div>`;
   }
-  if (record.fatigue != null) {
-    scores.innerHTML += `<div class="memo-popup-score"><div class="memo-popup-dot" style="background:#3b82f6"></div><span style="color:#3b82f6">疲労感 ${record.fatigue}</span></div>`;
+  if (fat != null) {
+    scores.innerHTML += `<div class="memo-popup-score"><div class="memo-popup-dot" style="background:#3b82f6"></div><span style="color:#3b82f6">疲労感 ${fat} / 10</span></div>`;
+  }
+  if (sat == null && fat == null) {
+    scores.innerHTML = `<span style="font-size:12px;color:var(--text-muted)">スコアなし</span>`;
   }
 
   const body = document.getElementById('memo-popup-body');
@@ -1312,7 +1332,7 @@ function closeMemoPopup(evt) {
   document.getElementById('memo-popup').classList.remove('show');
 }
 
-// iOSでのタップ検出補助
+// iOSタップ補助
 function setupConditionChartTouch() {
   const canvas = document.getElementById('chart-condition');
   if (!canvas || canvas._touchBound) return;
@@ -1330,7 +1350,6 @@ function setupConditionChartTouch() {
       'index', { axis:'x', intersect:false }, false
     );
     if (!points.length) return;
-    // indexはrecords配列の直接インデックス
     const i   = points[0].index;
     const rec = (state.condRecordsForPopup || [])[i];
     if (rec) showMemoPopup(rec);
