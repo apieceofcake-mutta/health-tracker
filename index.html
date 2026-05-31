@@ -714,12 +714,14 @@ async function renderGraphs() {
     noData.style.display='none'; banner.style.display='flex';
     const latest = records[records.length-1], oldest = records[0];
     const latestW = latest.weight != null ? parseFloat(latest.weight) : null;
-    const oldestW = records.length > 1 ? (oldest.weight != null ? parseFloat(oldest.weight) : null) : latestW;
-    document.getElementById('sum-weight').textContent = latestW != null ? latestW+' kg' : '--';
-    document.getElementById('sum-days').textContent   = records.length+' 日';
+    const oldestW = records.length > 1
+      ? (oldest.weight != null ? parseFloat(oldest.weight) : null)
+      : latestW;
+    document.getElementById('sum-weight').textContent = latestW != null ? latestW + ' kg' : '--';
+    document.getElementById('sum-days').textContent   = records.length + ' 日';
     if (latestW != null && oldestW != null) {
       const diff = (latestW - oldestW).toFixed(1);
-      const el = document.getElementById('sum-diff');
+      const el   = document.getElementById('sum-diff');
       el.textContent = (parseFloat(diff) > 0 ? '+' : '') + diff + ' kg';
       el.style.color = parseFloat(diff) <= 0 ? 'var(--success)' : 'var(--danger)';
     } else {
@@ -802,24 +804,30 @@ async function renderGraphs() {
 }
 
 // iOSタッチ補助（conditionグラフ）
+// renderGraphsのたびに呼ばれるため、前回のリスナーを除去してから登録する
+let _condTouchHandler = null;
 function setupCondTouch() {
   const canvas = document.getElementById('chart-condition');
-  if (!canvas || canvas._tb) return;
-  canvas._tb = true;
-  canvas.addEventListener('touchend', function(e) {
+  if (!canvas) return;
+  // 前回のリスナーを除去
+  if (_condTouchHandler) {
+    canvas.removeEventListener('touchend', _condTouchHandler);
+  }
+  _condTouchHandler = function(e) {
     e.preventDefault();
     const touch = e.changedTouches[0];
     const chart = state.charts['chart-condition'];
     if (!chart) return;
     const rect = canvas.getBoundingClientRect();
     const pts  = chart.getElementsAtEventForMode(
-      { offsetX: touch.clientX-rect.left, offsetY: touch.clientY-rect.top, native:e },
-      'index', { axis:'x', intersect:false }, false
+      { offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top, native: e },
+      'index', { axis: 'x', intersect: false }, false
     );
     if (!pts.length) return;
     const rec = state.condRecords[pts[0].index];
     if (rec) showMemoPopup(rec);
-  }, { passive:false });
+  };
+  canvas.addEventListener('touchend', _condTouchHandler, { passive: false });
 }
 
 function setPeriod(days) {
