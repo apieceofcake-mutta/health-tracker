@@ -1074,37 +1074,50 @@ async function renderGraphs() {
     document.getElementById('chart-condition').style.display='block';
     document.getElementById('empty-condition').style.display='none';
     if (state.charts['chart-condition']) state.charts['chart-condition'].destroy();
+
+    // タップ検出用にrecordsとlabelsをクロージャで保持
+    const condRecords = records;
+    const condLabels  = labels;
+    // iOS touchend補助用にstateに保存
+    state.condRecordsForPopup = records;
+    // 間引き前の全ラベルも保存（インデックス逆引き用）
+    state.condAllLabels = labels;
+
     const condOpts = JSON.parse(JSON.stringify(BASE_OPTS));
     condOpts.spanGaps = true;
     condOpts.scales.y = { ...condOpts.scales.y, min:0, max:5, ticks:{ ...condOpts.scales.y.ticks, stepSize:1 } };
     condOpts.plugins.legend = { display:true, position:'bottom', labels:{ boxWidth:10, font:{ size:10 }, color:'#64748b', padding:12 } };
-    // タップしたデータ点のメモを表示
+    condOpts.interaction = { mode:'nearest', axis:'x', intersect:false };
     condOpts.onClick = (evt, elements) => {
       if (!elements.length) return;
-      const idx = elements[0].index;
-      // thinLabels適用後のインデックスから元のrecordsのインデックスを逆算
-      const visibleLabels = thinLabels(labels);
-      const visibleLabel  = visibleLabels[idx];
-      // 元のラベル（全件）から一致する日付のrecordを探す
-      const allLabels = labels; // thinLabels前の全ラベル
-      // visibleLabelが空文字の場合は間引かれたラベルなのでスキップ
-      if (!visibleLabel) return;
-      const origIdx = allLabels.indexOf(visibleLabel);
-      if (origIdx < 0) return;
-      const record = records[origIdx];
+      // dataIndexは間引き後のインデックス→元のrecordsのインデックスに変換
+      const dataIdx = elements[0].index;
+      const thinned = thinLabels(condLabels);
+      // 間引き後ラベルのうちdataIdx番目が元ラベル配列の何番目かを特定
+      let count = -1;
+      let origIdx = -1;
+      for (let i = 0; i < condLabels.length; i++) {
+        if (thinned[i] !== '') count++;
+        if (count === dataIdx) { origIdx = i; break; }
+      }
+      // 間引きなし（全ラベル表示）の場合はそのまま
+      if (origIdx < 0) origIdx = dataIdx;
+      const record = condRecords[origIdx];
       if (!record) return;
       showMemoPopup(record);
     };
     condOpts.onHover = (evt, elements) => {
-      evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+      if (evt.native) evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
     };
-    const satDS = { label:'満足度', data:satVals, borderColor:'#f97316', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:5, pointStyle:'circle',     pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true };
-    const fatDS = { label:'疲労感', data:fatVals, borderColor:'#3b82f6', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:5, pointStyle:'rectRounded', pointBackgroundColor:'#3b82f6', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true, borderDash:[6,3] };
+    const satDS = { label:'満足度', data:satVals, borderColor:'#f97316', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:6, pointHitRadius:24, pointStyle:'circle',     pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true };
+    const fatDS = { label:'疲労感', data:fatVals, borderColor:'#3b82f6', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:6, pointHitRadius:24, pointStyle:'rectRounded', pointBackgroundColor:'#3b82f6', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true, borderDash:[6,3] };
     state.charts['chart-condition'] = new Chart(document.getElementById('chart-condition'), {
       type: 'line',
-      data: { labels: thinLabels(labels), datasets: [satDS, fatDS] },
+      data: { labels: thinLabels(condLabels), datasets: [satDS, fatDS] },
       options: condOpts,
     });
+    // iOSタッチ補助を設定
+    setupConditionChartTouch();
   }
 
   renderChart('chart-steps','empty-steps',labels,[mkLine(stVals,'var(--col-steps)')], { scales:{ y: calcYRange(stVals, gSteps, 0.2) } });
@@ -1274,7 +1287,6 @@ function showMemoPopup(record) {
   const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wdays[d.getDay()]}）`;
   document.getElementById('memo-popup-date').textContent = dateStr;
 
-  // 満足度・疲労感スコア表示
   const scores = document.getElementById('memo-popup-scores');
   scores.innerHTML = '';
   if (record.satisfaction != null) {
@@ -1284,7 +1296,6 @@ function showMemoPopup(record) {
     scores.innerHTML += `<div class="memo-popup-score"><div class="memo-popup-dot" style="background:#3b82f6"></div><span style="color:#3b82f6">疲労感 ${record.fatigue}</span></div>`;
   }
 
-  // メモ本文
   const body = document.getElementById('memo-popup-body');
   if (record.memo && record.memo.trim() !== '') {
     body.innerHTML = `<div class="memo-popup-text">📝 ${record.memo}</div>`;
@@ -1296,9 +1307,41 @@ function showMemoPopup(record) {
 }
 
 function closeMemoPopup(evt) {
-  // 背景クリックまたは閉じるボタンで閉じる
   if (evt && evt.target !== document.getElementById('memo-popup')) return;
   document.getElementById('memo-popup').classList.remove('show');
+}
+
+// iOSでのタップ検出補助
+function setupConditionChartTouch() {
+  const canvas = document.getElementById('chart-condition');
+  if (!canvas || canvas._touchBound) return;
+  canvas._touchBound = true;
+  canvas.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    const touch = e.changedTouches[0];
+    const chart = state.charts['chart-condition'];
+    if (!chart) return;
+    const rect = canvas.getBoundingClientRect();
+    const x    = touch.clientX - rect.left;
+    const y    = touch.clientY - rect.top;
+    const points = chart.getElementsAtEventForMode(
+      { offsetX:x, offsetY:y, native:e },
+      'nearest', { axis:'x', intersect:false }, false
+    );
+    if (!points.length) return;
+    const dataIdx   = points[0].index;
+    const records   = state.condRecordsForPopup || [];
+    const allLabels = state.condAllLabels || [];
+    const thinned   = thinLabels(allLabels);
+    let count = -1, origIdx = -1;
+    for (let i = 0; i < allLabels.length; i++) {
+      if (thinned[i] !== '') count++;
+      if (count === dataIdx) { origIdx = i; break; }
+    }
+    if (origIdx < 0) origIdx = dataIdx;
+    const rec = records[origIdx];
+    if (rec) showMemoPopup(rec);
+  }, { passive:false });
 }
 let toastTimer;
 function showToast(msg) {
