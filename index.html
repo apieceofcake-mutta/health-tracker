@@ -371,6 +371,7 @@
             <div class="settings-row" id="btn-export"><div class="s-icon" style="background:rgba(37,99,235,.1)">📤</div><div style="flex:1"><div class="s-label">CSVエクスポート</div><div class="s-desc">全記録をCSVファイルに出力します</div></div><span class="s-chev">›</span></div>
             <div class="settings-row" id="btn-import-trigger"><div class="s-icon" style="background:rgba(16,185,129,.1)">📥</div><div style="flex:1"><div class="s-label">CSVインポート</div><div class="s-desc">バックアップCSVからデータを復元します</div></div><span class="s-chev">›</span></div>
             <div class="settings-row" id="btn-restore"><div class="s-icon" style="background:rgba(66,133,244,.1)">☁️</div><div style="flex:1"><div class="s-label">スプレッドシートから復元</div><div class="s-desc">Googleスプレッドシートの全データを端末に復元します</div></div><span class="s-chev">›</span></div>
+            <div class="settings-row" id="btn-check-memo"><div class="s-icon" style="background:rgba(100,116,139,.1)">🔍</div><div style="flex:1"><div class="s-label">最新データ確認</div><div class="s-desc">IndexedDBの最新レコード内容を表示します</div></div><span class="s-chev">›</span></div>
             <div class="settings-row" id="btn-delete-all"><div class="s-icon" style="background:rgba(239,68,68,.1)">🗑</div><div style="flex:1"><div class="s-label danger">全データを削除</div><div class="s-desc">記録をすべて消去します（復元不可）</div></div><span class="s-chev">›</span></div>
           </div>
         </div>
@@ -714,11 +715,14 @@ async function renderGraphs() {
     const latest = records[records.length-1], oldest = records[0];
     document.getElementById('sum-weight').textContent = latest.weight!=null ? latest.weight+' kg' : '--';
     document.getElementById('sum-days').textContent   = records.length+' 日';
-    if (latest.weight!=null && oldest.weight!=null && records.length>1) {
-      const diff = (latest.weight-oldest.weight).toFixed(1);
+    // 期間変化：最新と最古の体重差（1件のみの場合は±0表示）
+    const latestW = latest.weight;
+    const oldestW = records.length > 1 ? oldest.weight : latest.weight;
+    if (latestW != null && oldestW != null) {
+      const diff = (latestW - oldestW).toFixed(1);
       const el = document.getElementById('sum-diff');
-      el.textContent  = (parseFloat(diff)>0?'+':'')+diff+' kg';
-      el.style.color  = parseFloat(diff)<=0 ? 'var(--success)' : 'var(--danger)';
+      el.textContent = (parseFloat(diff) > 0 ? '+' : '') + diff + ' kg';
+      el.style.color = parseFloat(diff) <= 0 ? 'var(--success)' : 'var(--danger)';
     } else {
       document.getElementById('sum-diff').textContent = '--';
     }
@@ -843,17 +847,19 @@ function showMemoPopup(record) {
   document.getElementById('memo-date').textContent =
     `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wdays[d.getDay()]}）`;
 
-  const toTen = v => (v!=null && v<=5) ? v*2 : v;
+  const toTen = v => (v!=null && Number(v)<=5) ? Number(v)*2 : (v!=null ? Number(v) : null);
   const sat = toTen(record.satisfaction);
   const fat = toTen(record.fatigue);
   const scores = document.getElementById('memo-scores');
   scores.innerHTML = '';
-  if (sat != null) scores.innerHTML += `<div class="memo-score"><div class="memo-dot" style="background:#f97316"></div><span style="color:#f97316">満足度 ${sat}/10</span></div>`;
-  if (fat != null) scores.innerHTML += `<div class="memo-score"><div class="memo-dot" style="background:#3b82f6"></div><span style="color:#3b82f6">疲労感 ${fat}/10</span></div>`;
-  if (!sat && !fat) scores.innerHTML = `<span style="font-size:12px;color:var(--text-muted)">スコアなし</span>`;
+  if (sat != null && !isNaN(sat)) scores.innerHTML += `<div class="memo-score"><div class="memo-dot" style="background:#f97316"></div><span style="color:#f97316">満足度 ${sat}/10</span></div>`;
+  if (fat != null && !isNaN(fat)) scores.innerHTML += `<div class="memo-score"><div class="memo-dot" style="background:#3b82f6"></div><span style="color:#3b82f6">疲労感 ${fat}/10</span></div>`;
+  if ((!sat || isNaN(sat)) && (!fat || isNaN(fat))) scores.innerHTML = `<span style="font-size:12px;color:var(--text-muted)">スコアなし</span>`;
 
-  const memo = (record.memo || '').trim();
-  document.getElementById('memo-body').innerHTML = memo
+  // memoは英語キー・日本語キー・文字列変換すべて対応
+  const rawMemo = record.memo ?? record['メモ'] ?? record['memo'] ?? '';
+  const memo = String(rawMemo).trim();
+  document.getElementById('memo-body').innerHTML = (memo && memo !== 'null' && memo !== 'undefined')
     ? `<div class="memo-text">📝 ${memo}</div>`
     : `<div class="memo-empty">メモなし</div>`;
 
@@ -950,6 +956,16 @@ document.getElementById('btn-delete-all').addEventListener('click', async () => 
   const records = await dbGetAll();
   for (const r of records) await dbDelete(r.date);
   renderStats(); showToast('🗑 全データを削除しました');
+});
+
+// 最新レコードのメモフィールドを確認するデバッグ機能
+document.getElementById('btn-check-memo').addEventListener('click', async () => {
+  const records = await dbGetAll();
+  if (!records.length) { alert('データがありません'); return; }
+  const latest = records[records.length-1];
+  const keys = Object.keys(latest);
+  const memoVal = latest.memo;
+  alert(`最新レコード: ${latest.date}\n\nメモ値: "${memoVal}"\n型: ${typeof memoVal}\n\n全フィールド:\n${keys.map(k=>`${k}: ${JSON.stringify(latest[k])}`).join('\n')}`);
 });
 
 /* ── Toast ── */
