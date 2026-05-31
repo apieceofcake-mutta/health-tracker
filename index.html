@@ -636,7 +636,17 @@ async function syncToSheets(record) {
   try {
     const encoded = encodeURIComponent(JSON.stringify(record));
     const url = `${GAS_URL}?action=save&data=${encoded}`;
-    await fetch(url, { method: 'GET', mode: 'no-cors' });
+    // iOSのSafariはno-corsでリダイレクトをブロックするため
+    // redirectをfollowにしてcorsモードで試みる
+    await fetch(url, {
+      method: 'GET',
+      mode: 'cors',
+      redirect: 'follow',
+    }).catch(() => {
+      // CORSエラーになっても実際はGASに届いているケースがあるため
+      // エラーを無視してno-corsで再送
+      return fetch(url, { method: 'GET', mode: 'no-cors', redirect: 'follow' });
+    });
     return true;
   } catch(e) {
     console.warn('Sheets sync failed:', e);
