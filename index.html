@@ -332,6 +332,87 @@
       z-index: 1000; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* メモ吹き出し */
+    .memo-popup {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0,0,0,0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .memo-popup.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .memo-popup-inner {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      transform: translateY(12px);
+      transition: transform 0.2s;
+    }
+    .memo-popup.show .memo-popup-inner { transform: translateY(0); }
+    .memo-popup-date {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .memo-popup-scores {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .memo-popup-score {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .memo-popup-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+    .memo-popup-text {
+      font-size: 14px;
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 48px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      white-space: pre-wrap;
+    }
+    .memo-popup-empty {
+      font-size: 13px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      font-style: italic;
+    }
+    .memo-popup-close {
+      width: 100%;
+      margin-top: 16px;
+      padding: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
   </style>
 </head>
 <body>
@@ -481,9 +562,10 @@
           <div class="chart-card"><div class="chart-title">😴  睡眠時間 (h)</div><div class="chart-wrap"><canvas id="chart-sleep"></canvas></div><div class="chart-empty" id="empty-sleep" style="display:none">データがありません</div></div>
           <div class="chart-card">
             <div class="chart-title">⭐  満足度 / 疲労感 (1–5)</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-bottom:8px">💬 グラフの点をタップするとメモを表示</div>
             <div class="legend-row">
-              <div class="legend-item"><div class="legend-dot" style="background:var(--col-sat)"></div><span class="legend-text">満足度</span></div>
-              <div class="legend-item"><div class="legend-dot" style="background:var(--col-fatigue)"></div><span class="legend-text">疲労感</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div><span class="legend-text">満足度</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div><span class="legend-text">疲労感</span></div>
             </div>
             <div class="chart-wrap"><canvas id="chart-condition"></canvas></div><div class="chart-empty" id="empty-condition" style="display:none">データがありません</div>
           </div>
@@ -561,6 +643,16 @@
   </nav>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- メモ吹き出し -->
+<div class="memo-popup" id="memo-popup" onclick="closeMemoPopup(event)">
+  <div class="memo-popup-inner">
+    <div class="memo-popup-date" id="memo-popup-date"></div>
+    <div class="memo-popup-scores" id="memo-popup-scores"></div>
+    <div id="memo-popup-body"></div>
+    <button class="memo-popup-close" onclick="closeMemoPopup()">閉じる</button>
+  </div>
+</div>
 
 <script>
 const state = {
@@ -986,8 +1078,27 @@ async function renderGraphs() {
     condOpts.spanGaps = true;
     condOpts.scales.y = { ...condOpts.scales.y, min:0, max:5, ticks:{ ...condOpts.scales.y.ticks, stepSize:1 } };
     condOpts.plugins.legend = { display:true, position:'bottom', labels:{ boxWidth:10, font:{ size:10 }, color:'#64748b', padding:12 } };
-    // 満足度：暖色（オレンジ系）、疲労感：寒色（ブルー系）、線幅・点サイズで重なっても判別しやすく
-    const satDS = { label:'満足度', data:satVals, borderColor:'#f97316', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:5, pointStyle:'circle',    pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true };
+    // タップしたデータ点のメモを表示
+    condOpts.onClick = (evt, elements) => {
+      if (!elements.length) return;
+      const idx = elements[0].index;
+      // thinLabels適用後のインデックスから元のrecordsのインデックスを逆算
+      const visibleLabels = thinLabels(labels);
+      const visibleLabel  = visibleLabels[idx];
+      // 元のラベル（全件）から一致する日付のrecordを探す
+      const allLabels = labels; // thinLabels前の全ラベル
+      // visibleLabelが空文字の場合は間引かれたラベルなのでスキップ
+      if (!visibleLabel) return;
+      const origIdx = allLabels.indexOf(visibleLabel);
+      if (origIdx < 0) return;
+      const record = records[origIdx];
+      if (!record) return;
+      showMemoPopup(record);
+    };
+    condOpts.onHover = (evt, elements) => {
+      evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+    };
+    const satDS = { label:'満足度', data:satVals, borderColor:'#f97316', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:5, pointStyle:'circle',     pointBackgroundColor:'#f97316', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true };
     const fatDS = { label:'疲労感', data:fatVals, borderColor:'#3b82f6', backgroundColor:'transparent', borderWidth:3, fill:false, pointRadius:5, pointStyle:'rectRounded', pointBackgroundColor:'#3b82f6', pointBorderColor:'#fff', pointBorderWidth:2, tension:0.3, spanGaps:true, borderDash:[6,3] };
     state.charts['chart-condition'] = new Chart(document.getElementById('chart-condition'), {
       type: 'line',
@@ -1156,7 +1267,39 @@ async function importCSV(event) {
   showToast(`📥 ${imported}件インポート完了`);
 }
 
-/* Toast */
+/* メモ吹き出し */
+function showMemoPopup(record) {
+  const d = new Date(record.date + 'T00:00:00');
+  const wdays = ['日','月','火','水','木','金','土'];
+  const dateStr = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${wdays[d.getDay()]}）`;
+  document.getElementById('memo-popup-date').textContent = dateStr;
+
+  // 満足度・疲労感スコア表示
+  const scores = document.getElementById('memo-popup-scores');
+  scores.innerHTML = '';
+  if (record.satisfaction != null) {
+    scores.innerHTML += `<div class="memo-popup-score"><div class="memo-popup-dot" style="background:#f97316"></div><span style="color:#f97316">満足度 ${record.satisfaction}</span></div>`;
+  }
+  if (record.fatigue != null) {
+    scores.innerHTML += `<div class="memo-popup-score"><div class="memo-popup-dot" style="background:#3b82f6"></div><span style="color:#3b82f6">疲労感 ${record.fatigue}</span></div>`;
+  }
+
+  // メモ本文
+  const body = document.getElementById('memo-popup-body');
+  if (record.memo && record.memo.trim() !== '') {
+    body.innerHTML = `<div class="memo-popup-text">📝 ${record.memo}</div>`;
+  } else {
+    body.innerHTML = `<div class="memo-popup-empty">メモなし</div>`;
+  }
+
+  document.getElementById('memo-popup').classList.add('show');
+}
+
+function closeMemoPopup(evt) {
+  // 背景クリックまたは閉じるボタンで閉じる
+  if (evt && evt.target !== document.getElementById('memo-popup')) return;
+  document.getElementById('memo-popup').classList.remove('show');
+}
 let toastTimer;
 function showToast(msg) {
   const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
