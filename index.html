@@ -124,6 +124,43 @@
     .hist-val{flex:1;font-size:11px;font-weight:500;text-align:right}
     .graph-panel{display:none}
     .graph-panel.active{display:block}
+    /* Training */
+    .tr-menu-type{display:flex;gap:6px;padding:12px 14px 0;flex-wrap:wrap}
+    .tr-menu-btn{padding:6px 14px;border-radius:100px;border:1.5px solid var(--border);background:var(--bg-card);font-family:var(--font);font-size:12px;font-weight:700;color:var(--text-secondary);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+    .tr-menu-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .ex-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .ex-header{display:flex;align-items:center;gap:10px;padding:12px 14px}
+    .ex-name{font-size:14px;font-weight:700;color:var(--text-primary);flex:1}
+    .ex-prev{font-size:10px;color:var(--text-muted);margin-top:2px;font-family:var(--font-mono)}
+    .ex-del-btn{width:28px;height:28px;border-radius:50%;border:none;background:rgba(239,68,68,.1);color:var(--danger);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+    .ex-body{padding:0 14px 14px}
+    .set-row{display:grid;grid-template-columns:28px 1fr 1fr 32px;gap:6px;align-items:center;margin-bottom:6px}
+    .set-num{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--text-muted);text-align:center}
+    .set-input{background:var(--bg-input);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 6px;font-family:var(--font-mono);font-size:17px;font-weight:500;color:var(--text-primary);width:100%;outline:none;-webkit-appearance:none;text-align:center;transition:border-color .15s}
+    .set-input:focus{border-color:var(--border-focus)}
+    .set-input::placeholder{color:var(--text-muted)}
+    .set-del-btn{width:30px;height:30px;border-radius:var(--r-sm);border:none;background:rgba(239,68,68,.08);color:var(--danger);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+    .set-label-row{display:grid;grid-template-columns:28px 1fr 1fr 32px;gap:6px;margin-bottom:4px}
+    .set-label{font-size:10px;font-weight:700;color:var(--text-muted);text-align:center;letter-spacing:.5px}
+    .add-set-btn{width:100%;padding:8px;border-radius:var(--r-sm);border:1.5px dashed var(--border);background:transparent;font-family:var(--font);font-size:12px;font-weight:600;color:var(--text-secondary);cursor:pointer;margin-top:4px;-webkit-tap-highlight-color:transparent;transition:all .15s}
+    .add-set-btn:active{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+    .add-ex-area{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-bottom:12px}
+    .add-ex-title{font-size:11px;font-weight:700;color:var(--text-secondary);margin-bottom:10px;letter-spacing:1px;text-transform:uppercase}
+    .ex-preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+    .ex-preset-btn{padding:9px 10px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-input);font-family:var(--font);font-size:12px;font-weight:500;color:var(--text-primary);cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:all .15s;line-height:1.3}
+    .ex-preset-btn:active{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}
+    .ex-preset-cat{font-size:9px;color:var(--text-muted);display:block;margin-bottom:2px}
+    .ex-custom-row{display:flex;gap:8px}
+    .ex-custom-input{flex:1;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;font-family:var(--font);font-size:14px;color:var(--text-primary);outline:none;-webkit-appearance:none}
+    .ex-custom-input:focus{border-color:var(--border-focus)}
+    .ex-custom-add{padding:10px 14px;background:var(--accent);border:none;border-radius:var(--r-sm);font-family:var(--font);font-size:13px;font-weight:700;color:#fff;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+    .tr-save-btn{width:100%;height:52px;background:var(--accent);border:none;border-radius:var(--r-lg);font-family:var(--font);font-size:15px;font-weight:700;color:#fff;cursor:pointer;margin:8px 0 20px;box-shadow:0 4px 12px rgba(37,99,235,.3);-webkit-tap-highlight-color:transparent}
+    .tr-save-btn:active{opacity:.85}
+    .prev-tag{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;font-family:var(--font-mono);background:rgba(16,185,129,.12);color:var(--success);border:1px solid rgba(16,185,129,.3)}
+    .tr-hist-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .tr-hist-date{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:8px;font-family:var(--font-mono)}
+    .tr-hist-ex{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px}
+    .tr-hist-sets{font-size:11px;color:var(--text-muted);font-family:var(--font-mono);margin-bottom:8px;line-height:1.6}
     /* Settings */
     .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
     .stats-cell{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.04)}
@@ -328,6 +365,51 @@
       </div>
     </div>
 
+    <!-- TRAINING -->
+    <div class="screen" id="screen-training">
+      <!-- 日付ナビ（既存流用） -->
+      <div class="date-nav" id="tr-date-nav">
+        <button class="date-arrow" id="tr-date-prev">‹</button>
+        <div class="date-center">
+          <div class="date-main" id="tr-date-display"></div>
+          <div class="date-meta">
+            <span class="date-wday" id="tr-date-wday"></span>
+            <span class="badge badge-today" id="tr-badge-today" style="display:none">TODAY</span>
+            <span class="badge badge-saved" id="tr-badge-saved" style="display:none">記録済み</span>
+          </div>
+        </div>
+        <button class="date-arrow" id="tr-date-next">›</button>
+      </div>
+      <!-- メニュータイプ -->
+      <div class="tr-menu-type">
+        <button class="tr-menu-btn active" data-menu="Push">Push</button>
+        <button class="tr-menu-btn" data-menu="Pull">Pull</button>
+        <button class="tr-menu-btn" data-menu="Legs">Legs</button>
+        <button class="tr-menu-btn" data-menu="有酸素">有酸素</button>
+        <button class="tr-menu-btn" data-menu="全身">全身</button>
+        <button class="tr-menu-btn" data-menu="その他">その他</button>
+      </div>
+      <div class="sc" style="padding-top:12px">
+        <!-- 種目リスト（JS生成） -->
+        <div id="tr-exercise-list"></div>
+        <!-- 種目追加エリア -->
+        <div class="add-ex-area">
+          <div class="add-ex-title">＋ 種目を追加</div>
+          <div class="ex-preset-grid" id="tr-preset-grid"></div>
+          <div class="ex-custom-row">
+            <input type="text" class="ex-custom-input" id="tr-custom-name" placeholder="種目名を入力...">
+            <button class="ex-custom-add" id="tr-custom-add-btn">追加</button>
+          </div>
+        </div>
+        <button class="tr-save-btn" id="tr-save-btn">トレーニングを保存</button>
+        <!-- 履歴 -->
+        <div id="tr-history-section">
+          <div style="font-size:11px;font-weight:700;color:var(--text-secondary);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">📋  直近の記録</div>
+          <div id="tr-history-list"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="screen" id="screen-settings">
       <div class="sc">
@@ -385,6 +467,7 @@
   </div>
   <nav class="tab-bar">
     <button class="tab-btn active" data-screen="input" id="tab-input"><span class="tab-icon">📝</span><span class="tab-label">記録</span></button>
+    <button class="tab-btn" data-screen="training" id="tab-training"><span class="tab-icon">💪</span><span class="tab-label">筋トレ</span></button>
     <button class="tab-btn" data-screen="graph" id="tab-graph"><span class="tab-icon">📊</span><span class="tab-label">グラフ</span></button>
     <button class="tab-btn" data-screen="settings" id="tab-settings"><span class="tab-icon">⚙️</span><span class="tab-label">設定</span></button>
   </nav>
@@ -623,17 +706,368 @@ document.getElementById('opt-toggle').addEventListener('click', toggleOptional);
 
 /* ── Tab Navigation ── */
 function switchTab(tab) {
-  ['input','graph','settings'].forEach(t => {
+  ['input','training','graph','settings'].forEach(t => {
     document.getElementById(`screen-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
   });
   state.currentTab = tab;
   if (tab === 'graph')    renderGraphs();
   if (tab === 'settings') renderStats();
+  if (tab === 'training') renderTrainingScreen();
 }
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => switchTab(btn.dataset.screen));
 });
+
+/* ════════════════════════════════════════
+   TRAINING MODULE
+════════════════════════════════════════ */
+
+// トレーニングDB（別ObjectStore）
+function openTrainingStore(mode) {
+  return db.transaction('training', mode).objectStore('training');
+}
+function trGet(date) {
+  return new Promise((res,rej) => {
+    const r = openTrainingStore('readonly').get(date);
+    r.onsuccess = e => res(e.target.result || null);
+    r.onerror   = e => rej(e.target.error);
+  });
+}
+function trPut(record) {
+  return new Promise((res,rej) => {
+    const r = openTrainingStore('readwrite').put(record);
+    r.onsuccess = e => res(e.target.result);
+    r.onerror   = e => rej(e.target.error);
+  });
+}
+function trGetAll() {
+  return new Promise((res,rej) => {
+    const r = openTrainingStore('readonly').getAll();
+    r.onsuccess = e => res(e.target.result.sort((a,b)=>a.date.localeCompare(b.date)));
+    r.onerror   = e => rej(e.target.error);
+  });
+}
+
+// DB初期化時にtraining storeを追加（versionアップ）
+function openDBv2() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('HealthTrackerDB', 2);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('records'))
+        d.createObjectStore('records', { keyPath:'date' });
+      if (!d.objectStoreNames.contains('training'))
+        d.createObjectStore('training', { keyPath:'date' });
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror   = e => reject(e.target.error);
+  });
+}
+
+// ─── Training State ───
+const trState = {
+  currentDate: getTodayStr(),
+  menuType: 'Push',
+  exercises: [], // [{ name, sets:[{weight,reps}] }]
+};
+
+// プリセット種目
+const TR_PRESETS = {
+  Push: [
+    { name:'チェストプレス',   cat:'胸' },
+    { name:'ペックデック',     cat:'胸' },
+    { name:'ショルダープレス', cat:'肩' },
+    { name:'サイドレイズ',     cat:'肩' },
+    { name:'プッシュダウン',   cat:'腕' },
+    { name:'ベンチプレス',     cat:'胸' },
+    { name:'インクラインプレス',cat:'胸' },
+    { name:'ダンベルフライ',   cat:'胸' },
+    { name:'フロントレイズ',   cat:'肩' },
+    { name:'トライセプスエクステンション', cat:'腕' },
+  ],
+  Pull: [
+    { name:'ラットプルダウン', cat:'背中' },
+    { name:'シーテッドロウ',   cat:'背中' },
+    { name:'ケーブルロウ',     cat:'背中' },
+    { name:'フェイスプル',     cat:'肩後' },
+    { name:'バイセプスカール', cat:'腕' },
+    { name:'ハンマーカール',   cat:'腕' },
+    { name:'デッドリフト',     cat:'背中' },
+    { name:'チンアップ',       cat:'背中' },
+    { name:'プリーチャーカール',cat:'腕' },
+    { name:'リアデルトフライ', cat:'肩後' },
+  ],
+  Legs: [
+    { name:'レッグプレス',     cat:'脚' },
+    { name:'レッグエクステンション', cat:'脚' },
+    { name:'レッグカール',     cat:'脚' },
+    { name:'カーフレイズ',     cat:'脚' },
+    { name:'スクワット',       cat:'脚' },
+    { name:'ランジ',           cat:'脚' },
+    { name:'ヒップアブダクション', cat:'臀部' },
+    { name:'レッグアダクション',   cat:'内腿' },
+  ],
+  有酸素: [
+    { name:'ランニング',       cat:'有酸素' },
+    { name:'バイク',           cat:'有酸素' },
+    { name:'ウォーキング',     cat:'有酸素' },
+    { name:'クロストレーナー', cat:'有酸素' },
+    { name:'ローイング',       cat:'有酸素' },
+  ],
+  全身: [],
+  その他: [],
+};
+
+// ─── 日付ナビ（トレーニング用） ───
+function updateTrDateNav(hasSaved) {
+  const isToday = trState.currentDate === getTodayStr();
+  document.getElementById('tr-date-display').textContent = formatDateJP(trState.currentDate);
+  document.getElementById('tr-date-wday').textContent    = getWday(trState.currentDate);
+  document.getElementById('tr-badge-today').style.display = isToday ? 'inline-block' : 'none';
+  document.getElementById('tr-badge-saved').style.display = hasSaved ? 'inline-block' : 'none';
+  document.getElementById('tr-date-next').disabled = isToday;
+}
+document.getElementById('tr-date-prev').addEventListener('click', () => navigateTrDate(-1));
+document.getElementById('tr-date-next').addEventListener('click', () => navigateTrDate(1));
+async function navigateTrDate(delta) {
+  const next = addDays(trState.currentDate, delta);
+  if (next > getTodayStr()) return;
+  trState.currentDate = next;
+  await loadTrainingRecord();
+}
+
+// メニュータイプボタン
+document.querySelectorAll('.tr-menu-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    trState.menuType = btn.dataset.menu;
+    document.querySelectorAll('.tr-menu-btn').forEach(b => b.classList.toggle('active', b === btn));
+    renderPresets();
+  });
+});
+
+// ─── 前回記録を検索 ───
+async function getPrevRecord(exerciseName) {
+  const all = await trGetAll();
+  // 現在日付より前で最新のものを探す
+  const prev = [...all].reverse().find(r =>
+    r.date < trState.currentDate &&
+    r.exercises && r.exercises.some(e => e.name === exerciseName)
+  );
+  if (!prev) return null;
+  const ex = prev.exercises.find(e => e.name === exerciseName);
+  return { date: prev.date, sets: ex.sets };
+}
+
+function formatPrevSets(sets) {
+  if (!sets || !sets.length) return '';
+  return sets.map(s => `${s.weight}kg×${s.reps}`).join('  ');
+}
+
+// ─── 種目カードを描画 ───
+async function renderExerciseList() {
+  const container = document.getElementById('tr-exercise-list');
+  if (!trState.exercises.length) {
+    container.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--text-muted);font-size:13px">下の「種目を追加」から種目を選んでください</div>`;
+    return;
+  }
+
+  const cards = await Promise.all(trState.exercises.map(async (ex, exIdx) => {
+    const prev = await getPrevRecord(ex.name);
+    const prevHtml = prev
+      ? `<div style="display:flex;align-items:center;gap:5px;margin-top:2px"><span class="prev-tag">前回 ${prev.date.slice(5).replace('-','/')}</span><span class="ex-prev">${formatPrevSets(prev.sets)}</span></div>`
+      : `<div class="ex-prev" style="margin-top:2px">前回の記録なし</div>`;
+
+    const setsHtml = ex.sets.map((set, sIdx) => `
+      <div class="set-row" data-ex="${exIdx}" data-set="${sIdx}">
+        <div class="set-num">${sIdx+1}</div>
+        <input class="set-input" type="number" inputmode="decimal"
+          placeholder="${prev?.sets?.[sIdx]?.weight ?? '重量'}"
+          value="${set.weight ?? ''}"
+          data-ex="${exIdx}" data-set="${sIdx}" data-field="weight">
+        <input class="set-input" type="number" inputmode="numeric"
+          placeholder="${prev?.sets?.[sIdx]?.reps ?? '回数'}"
+          value="${set.reps ?? ''}"
+          data-ex="${exIdx}" data-set="${sIdx}" data-field="reps">
+        <button class="set-del-btn" data-ex="${exIdx}" data-set="${sIdx}" data-action="del-set">×</button>
+      </div>`).join('');
+
+    return `
+      <div class="ex-card" id="ex-card-${exIdx}">
+        <div class="ex-header">
+          <div style="flex:1">
+            <div class="ex-name">${ex.name}</div>
+            ${prevHtml}
+          </div>
+          <button class="ex-del-btn" data-ex="${exIdx}" data-action="del-ex">×</button>
+        </div>
+        <div class="ex-body">
+          <div class="set-label-row">
+            <div class="set-label"></div>
+            <div class="set-label">重量 (kg)</div>
+            <div class="set-label">回数</div>
+            <div class="set-label"></div>
+          </div>
+          ${setsHtml}
+          <button class="add-set-btn" data-ex="${exIdx}" data-action="add-set">＋ セット追加</button>
+        </div>
+      </div>`;
+  }));
+
+  container.innerHTML = cards.join('');
+
+  // イベント委譲でまとめて処理
+  container.querySelectorAll('input.set-input').forEach(input => {
+    input.addEventListener('input', e => {
+      const ei = parseInt(e.target.dataset.ex);
+      const si = parseInt(e.target.dataset.set);
+      const f  = e.target.dataset.field;
+      if (!trState.exercises[ei]) return;
+      if (!trState.exercises[ei].sets[si]) return;
+      const v = e.target.value.trim();
+      trState.exercises[ei].sets[si][f] = v !== '' ? (f==='reps' ? parseInt(v) : parseFloat(v)) : null;
+    });
+  });
+  container.querySelectorAll('button[data-action]').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      const action = btn.dataset.action;
+      const ei     = parseInt(btn.dataset.ex);
+      const si     = parseInt(btn.dataset.set);
+      if (action === 'del-ex') {
+        trState.exercises.splice(ei, 1);
+        await renderExerciseList();
+        renderPresets();
+      } else if (action === 'add-set') {
+        trState.exercises[ei].sets.push({ weight: null, reps: null });
+        await renderExerciseList();
+      } else if (action === 'del-set') {
+        if (trState.exercises[ei].sets.length > 1) {
+          trState.exercises[ei].sets.splice(si, 1);
+          await renderExerciseList();
+        }
+      }
+    });
+  });
+}
+
+// ─── プリセットグリッド描画 ───
+function renderPresets() {
+  const grid = document.getElementById('tr-preset-grid');
+  const presets = TR_PRESETS[trState.menuType] || [];
+  // すでに追加済みの種目は薄く表示
+  const added = new Set(trState.exercises.map(e => e.name));
+  grid.innerHTML = presets.map(p => `
+    <button class="ex-preset-btn ${added.has(p.name) ? 'opacity-50' : ''}"
+      data-name="${p.name}" style="${added.has(p.name) ? 'opacity:.4' : ''}">
+      <span class="ex-preset-cat">${p.cat}</span>${p.name}
+    </button>`).join('');
+
+  grid.querySelectorAll('.ex-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => addExercise(btn.dataset.name));
+  });
+}
+
+// ─── 種目追加 ───
+async function addExercise(name) {
+  if (!name.trim()) return;
+  // 既に追加済みならスキップ
+  if (trState.exercises.some(e => e.name === name.trim())) {
+    showToast(`「${name}」はすでに追加されています`);
+    return;
+  }
+  // 前回のセット数を参考に初期セット数を決める
+  const prev = await getPrevRecord(name.trim());
+  const initSetCount = prev ? prev.sets.length : 3;
+  trState.exercises.push({
+    name: name.trim(),
+    sets: Array.from({ length: initSetCount }, () => ({ weight: null, reps: null }))
+  });
+  document.getElementById('tr-custom-name').value = '';
+  await renderExerciseList();
+  renderPresets();
+}
+
+document.getElementById('tr-custom-add-btn').addEventListener('click', () => {
+  const name = document.getElementById('tr-custom-name').value.trim();
+  if (name) addExercise(name);
+});
+document.getElementById('tr-custom-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const name = e.target.value.trim();
+    if (name) addExercise(name);
+  }
+});
+
+// ─── 保存 ───
+async function saveTraining() {
+  if (!trState.exercises.length) {
+    showToast('種目を追加してください');
+    return;
+  }
+  const record = {
+    date:      trState.currentDate,
+    menuType:  trState.menuType,
+    exercises: trState.exercises.map(ex => ({
+      name: ex.name,
+      sets: ex.sets.filter(s => s.weight != null || s.reps != null)
+    })).filter(ex => ex.sets.length > 0),
+    updatedAt: new Date().toISOString(),
+  };
+  await trPut(record);
+  updateTrDateNav(true);
+  // Sheetsにも同期
+  syncToSheets({ type:'training', ...record }).catch(()=>{});
+  await renderTrainingHistory();
+  showToast('✅ トレーニングを保存しました');
+}
+document.getElementById('tr-save-btn').addEventListener('click', saveTraining);
+
+// ─── 既存レコードを読み込み ───
+async function loadTrainingRecord() {
+  const record = await trGet(trState.currentDate);
+  if (record) {
+    trState.menuType  = record.menuType || 'Push';
+    trState.exercises = record.exercises.map(ex => ({
+      name: ex.name,
+      sets: ex.sets.length ? ex.sets : [{ weight:null, reps:null }]
+    }));
+    document.querySelectorAll('.tr-menu-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.menu === trState.menuType)
+    );
+  } else {
+    trState.menuType  = 'Push';
+    trState.exercises = [];
+    document.querySelectorAll('.tr-menu-btn').forEach((b,i) =>
+      b.classList.toggle('active', i === 0)
+    );
+  }
+  updateTrDateNav(!!record);
+  await renderExerciseList();
+  renderPresets();
+}
+
+// ─── 履歴描画 ───
+async function renderTrainingHistory() {
+  const all  = await trGetAll();
+  const section = document.getElementById('tr-history-section');
+  const list    = document.getElementById('tr-history-list');
+  const recent  = [...all].reverse().slice(0, 7);
+  if (!recent.length) { section.style.display='none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = recent.map(r => {
+    const exHtml = (r.exercises||[]).map(ex => {
+      const setsStr = ex.sets.map(s => `${s.weight??'?'}kg×${s.reps??'?'}`).join('  ');
+      return `<div class="tr-hist-ex">${ex.name}</div><div class="tr-hist-sets">${setsStr}</div>`;
+    }).join('');
+    return `<div class="tr-hist-card"><div class="tr-hist-date">${r.date}  [${r.menuType||''}]</div>${exHtml}</div>`;
+  }).join('');
+}
+
+// ─── トレーニング画面全体描画 ───
+async function renderTrainingScreen() {
+  await loadTrainingRecord();
+  await renderTrainingHistory();
+}
 
 /* ── Goals ── */
 const GOAL_KEYS = ['weight','bodyfat','muscle','calorie','sleep','steps'];
@@ -990,7 +1424,7 @@ function showToast(msg) {
 
 /* ── Init ── */
 async function init() {
-  await openDB();
+  await openDBv2();
   loadGoals();
   await loadInputForm();
 }
